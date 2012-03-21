@@ -1,0 +1,3 @@
+include chatroom/config/deployment.ini_tmpl
+recursive-include chatroom/public *
+recursive-include chatroom/templates *
