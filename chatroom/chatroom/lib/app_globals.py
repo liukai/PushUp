@@ -16,5 +16,5 @@ class Globals(object):
 
         """
         self.cache = CacheManager(**parse_cache_config_options(config))
-        self.message_queue = []
+        self.messageQueue = []
         self.userlist = {}
