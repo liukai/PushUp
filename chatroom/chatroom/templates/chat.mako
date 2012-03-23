@@ -119,12 +119,11 @@ function add_new_message_node(message) {
     node.children(".date").html(message["time"]);
     node.children(".name").html(message["nickname"]);
     node.children(".content").html(message["content"]);
-    node.removeClass("hidden");
+    node.attr("id", "");
     // TODO: Quck and dirty fix of the "UNSEEN" message in
     // in Safari
-    node.fadeOut(100);
-    node.fadeIn(300);
     board.prepend(node);
+    node.fadeIn(300);
 }
 
 function add(message) {
@@ -142,6 +141,7 @@ function init() {
             textbox.val("");
         }
     });
+    textbox.focus();
 
     update();
 }
@@ -154,7 +154,7 @@ function init() {
     <a href="/room/leave" id="leave">Leave</a>
 </div>
 <div id="messages" onload="init()">
-    <div id = "message_sample" class="message" style="display: none;">
+    <div id = "message_sample" class="message hidden">
         <span class="time">2010-10-30 1:20</span>
         <span class="name">Name</span>
         <div class="content">Content</div>

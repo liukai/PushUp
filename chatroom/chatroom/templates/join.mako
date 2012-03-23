@@ -18,10 +18,13 @@
             });
 
     }
+function init() {
+    $("#nicknameInput").focus();
+}
 </script>
 </%def>
 
-<%def name="body_attr()"></%def>
+<%def name="body_attr()">onload="init()"</%def>
 
 <h1>the Chat room: Powered by Speedo</h1>
 <form action="/users/join" method="POST">
