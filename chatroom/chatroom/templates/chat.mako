@@ -16,6 +16,15 @@ body {
     display: none;
 }
 
+#method_text {
+    display: block;
+    float: left;
+    color: #CCC;
+    font-size: 10pt;
+    clear: both;
+    margin: 5px;
+}
+
 #leave {
    float:left;
    display: block;
@@ -31,6 +40,7 @@ body {
 
 /* Input Box */
 #input_box {
+    clear: left;
 }
 #input_box input {
     font-size: 16pt;
@@ -45,6 +55,7 @@ body {
 
 /* Message Board */
 .message {
+    clear: left;
     margin-top: 20px;
     display: block;
     float:left;
@@ -156,8 +167,7 @@ $(document).ready(function () {
 
     // title
     document.title = "${c.nickname} - Chat room";
-    alert("${c.polling}");
-
+    $("#method_text").html("Polled by: "+ methods["${c.polling}"]["name"]);
 
     // 
     update();
@@ -169,6 +179,7 @@ $(document).ready(function () {
     <input id = "textbox" type="text"></input>
     <a href="/room/leave" id="leave">Leave</a>
 </div>
+<span id="method_text"></span>
 <div id="messages" onload="init()">
     <div id = "message_sample" class="message hidden">
         <span class="time">2010-10-30 1:20</span>
