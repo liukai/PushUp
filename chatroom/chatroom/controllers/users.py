@@ -10,7 +10,6 @@ from pylons.decorators import jsonify
 log = logging.getLogger(__name__)
 
 class UsersController(BaseController):
-    @jsonify
     def join(self):
         if "nickname" not in request.params:
             return make_error_response("expected nickname in the request")
@@ -20,9 +19,7 @@ class UsersController(BaseController):
         session["pos"] = 0
         session.save()
 
-        response = make_success_response({"nickname": nickname})
-
-        return response
+        return render("/chat.mako");
 
     @jsonify
     def leave(self):

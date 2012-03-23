@@ -24,12 +24,11 @@
 <%def name="body_attr()"></%def>
 
 <h1>the Chat room: Powered by Speedo</h1>
-<form action="#">
+<form action="/users/join" method="POST">
     <fieldset> 
         <label for="nick">Nick Name:</label>
-        <input id="nicknameInput" class="text" type="text" name="nick" value="">
-        <input id="joinButton" class="button" type="button" 
-               name="" value="Join" onclick="join()">
+        <input id="nicknameInput" class="text" type="text" name="nickname" value="Mr. Speedo">
+        <input id="joinButton" class="button" type="submit" name="" value="Join">
     </fieldset>
 </form>
 
