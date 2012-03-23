@@ -72,13 +72,22 @@ body {
 }
 .message .content {
     color: #EEE;
-    overflow: hidden;
+    white-space:wrap;
     width: 90%;
 }
 </style>
 <script type="text/javascript">
+methods = {
+    "event": { name: "Event-based Long Polling", 
+               call: update_client_poll }, 
+    "multithread": { name: "Multithreading Long Polling",
+                        call: update_long_polling },
+    "client": { name: "Client Polling",
+               call: update_client_poll }, 
+};
+
 function update() {
-    update_long_polling();
+    methods["${c.polling}"].call();
 }
 function update_client_poll() {
     (function poll() {
@@ -132,7 +141,7 @@ function add(message) {
     });
 }
 
-function init() {
+$(document).ready(function () {
     textbox = $("#textbox");
     textbox.keydown(function(e) {
         if (e.keyCode == 13) {
@@ -141,13 +150,20 @@ function init() {
             textbox.val("");
         }
     });
+
+    // 
     textbox.focus();
 
+    // title
+    document.title = "${c.nickname} - Chat room";
+    alert("${c.polling}");
+
+
+    // 
     update();
-}
+});
 </script>
 </%def>
-<%def name="body_attr()">onload="init()"</%def>
 
 <div id="input_box">
     <input id = "textbox" type="text"></input>

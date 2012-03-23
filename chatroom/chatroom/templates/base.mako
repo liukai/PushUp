@@ -6,7 +6,7 @@
         <script src="/js/jquery.js"></script>
         ${self.head_tags()}
     </head>
-    <body ${self.body_attr()}>
+    <body> 
         ${self.body()}
     </body>
 </html>
