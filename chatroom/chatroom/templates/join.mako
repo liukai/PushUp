@@ -6,7 +6,7 @@
         nickname = $("#nicknameInput").val()
         
         // TODO need to froze the input/button
-        $.post("/users/join", {"nickname": nickname}, 
+        $.get("/users/join", {"nickname": nickname}, 
             function(response) {
                 if (response == null || response.result == "error") {
                     // TODO: simple error reporting
@@ -20,6 +20,8 @@
     }
 </script>
 </%def>
+
+<%def name="body_attr()"></%def>
 
 <h1>the Chat room: Powered by Speedo</h1>
 <form action="#">

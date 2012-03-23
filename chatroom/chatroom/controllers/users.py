@@ -18,6 +18,7 @@ class UsersController(BaseController):
         nickname = request.params["nickname"]
         session["nickname"] = nickname
         session["pos"] = 0
+        session.save()
 
         response = make_success_response({"nickname": nickname})
 
@@ -27,5 +28,6 @@ class UsersController(BaseController):
     def leave(self):
         del session["nickname"]
         del session["pos"]
+        session.save()
 
         return make_success_response({})

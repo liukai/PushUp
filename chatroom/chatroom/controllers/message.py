@@ -9,19 +9,24 @@ from chatroom.lib.base import BaseController, render
 from chatroom.lib.message import Message
 from datetime import datetime, timedelta
 import time
+import json
 
 log = logging.getLogger(__name__)
 
-def makeMessage(userId, content, time = datetime.now()):
-    return {"id": userId , "content": content, "time": str(time)}
+def makeMessage(nickname, content, time = datetime.now()):
+    return {"nickname": nickname , "content": content, "time": str(time)}
 
 class MessageController(BaseController):
 
     def add(self):
         userId = 1
         content = request.params["content"]
+        if "nickname" in session:
+            nickname = session["nickname"]
+        else:
+            nickname = "Unknown"
 
-        message = makeMessage(userId, content)
+        message = makeMessage(nickname, content)
         app_globals.messageQueue.append(message)
 
         return 'OK'
@@ -43,9 +48,9 @@ class MessageController(BaseController):
     @jsonify
     def update_long_poll(self):
         q = app_globals.messageQueue
-        if "posit" not in session:
-            session["posit"] = 0
-        pos = session["posit"]
+        if "pos" not in session:
+            session["pos"] = 0
+        pos = session["pos"]
 
         expired = datetime.now() + timedelta(0, 10);
         while expired >= datetime.now() and pos >= len(q):
@@ -53,9 +58,12 @@ class MessageController(BaseController):
 
         size = len(q)
         if pos <= size:
-            session["posit"] = size
+            session["pos"] = size
             session.save();
 
-            return q[pos:size]
+            messages = q[pos:size]
+            print "MESSAGES:", messages
+            return messages
         else:
-            return []
+            return ""
+

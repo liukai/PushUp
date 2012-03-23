@@ -13,7 +13,11 @@ class RoomController(BaseController):
     def chat(self):
         return  render('/chat.mako') if self._hasCheckedIn() \
                 else render('/join.mako')
+    def leave(self):
+        if "nickname" in session:
+            del session["nickname"]
+        return render('/join.mako')
 
     def _hasCheckedIn(self):
-        return "nickname" not in session
+        return "nickname" in session
 
