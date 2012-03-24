@@ -124,11 +124,10 @@ function update_long_polling() {
          })();
 }
 
-
 function add_new_message_nodes(messages) {
     if (messages == null)
         return;
-    board = $("#messages")
+    board = $("#messages");
     for (i = 0; i < messages.length; ++i) {
         var message = messages[i];
         add_new_message_node(message);
@@ -147,6 +146,8 @@ function add_new_message_node(message) {
 }
 
 function add(message) {
+    if (message == null || message.length == 0)
+        return;
     data = {"content": message}
     $.post("/message/add", data, function(data) {
     });
