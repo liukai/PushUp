@@ -6,20 +6,22 @@ from pylons import app_globals
 from pylons.decorators import jsonify
 
 from chatroom.lib.base import BaseController, render
-from chatroom.lib.message import Message
 from datetime import datetime, timedelta
 import time
 import json
+from chatroom.lib.response import *
 
 log = logging.getLogger(__name__)
 
 def _makeMessage(nickname, content, time = datetime.now()):
-    return {"nickname": nickname , "content": content, "time": str(time)}
+    return {"nickname": nickname ,
+            "content": content,
+            "time": time.strftime("%c")}
 
 # Utilities
 def _long_poll(q, pos):
     # TODO:
-    expired = datetime.now() + timedelta(0, 10);
+    expired = datetime.now() + timedelta(0, 45);
     while expired >= datetime.now() and pos >= len(q):
         time.sleep(0.5)
 
@@ -40,6 +42,8 @@ class MessageController(BaseController):
         message = _makeMessage(nickname, content)
         app_globals.messageQueue.append(message)
 
+        app_globals.messageQueue2.push(nickname, json.dumps(content))
+
         return 'OK'
 
     @jsonify
@@ -52,19 +56,22 @@ class MessageController(BaseController):
 
     def _update_message(self, pending = _no_poll):
         q = app_globals.messageQueue
-        if "pos" not in session:
-            session["pos"] = 0
 
         size = len(q)
-        pos = session["pos"]
+        pos = self._get_pos(size)
 
         pending(q, pos)
 
+        size = len(q)
         if pos >= size:
-            return []
+            return make_success_response([]);
 
         session["pos"] = size
         session.save();
 
         messages = q[pos:size]
-        return messages
+        return make_success_response(messages);
+    def _get_pos(self, size):
+        if "pos" not in session:
+            session["pos"] = size - 100 if size - 100 > 0 else 0
+        return session["pos"]

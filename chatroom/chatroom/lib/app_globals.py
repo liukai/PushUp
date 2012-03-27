@@ -2,6 +2,7 @@
 
 from beaker.cache import CacheManager
 from beaker.util import parse_cache_config_options
+from message_queue import RedisMessageQueue
 
 class Globals(object):
     """Globals acts as a container for objects available throughout the
@@ -17,4 +18,5 @@ class Globals(object):
         """
         self.cache = CacheManager(**parse_cache_config_options(config))
         self.messageQueue = []
+        self.messageQueue2 = RedisMessageQueue("chatroom:message_queue")
         self.userlist = {}

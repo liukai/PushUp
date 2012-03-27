@@ -120,22 +120,24 @@ function update_long_polling() {
          $.ajax({ url: "/message/update_long_poll",
                  success: add_new_message_nodes, 
                  error: function() { console.log("error occurs"); },
-                 dataType: "json", complete: poll, timeout: 10000 });
+                 dataType: "json", complete: poll, timeout: 50000 });
          })();
 }
 
-function add_new_message_nodes(messages) {
-    if (messages == null)
+function add_new_message_nodes(data) {
+    if (data == null || data.result == "error")
         return;
-    board = $("#messages");
+
+    var messages = data.data;
     for (i = 0; i < messages.length; ++i) {
         var message = messages[i];
         add_new_message_node(message);
     }
 }
 function add_new_message_node(message) {
-    node = $("#message_sample").clone();
-    node.children(".date").html(message["time"]);
+    var board = $("#messages");
+    var node = $("#message_sample").clone();
+    node.children(".time").html(message["time"]);
     node.children(".name").html(message["nickname"]);
     node.children(".content").html(message["content"]);
     node.attr("id", "");
