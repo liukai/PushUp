@@ -6,7 +6,7 @@ redis-server > redis.log &
 
 # Start the pylons 
 echo "Starting chatroom..."
-(cd chatroom && paster serve development.ini &)
+chatroom.sh start
 
 # Start the reverse proxy
 

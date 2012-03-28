@@ -1,5 +1,5 @@
 echo "Shutting down the chatroom"
-(cd chatroom && paster serve development.ini &)
+chatroom.sh stop
 
 echo "Shutting down redis"
 redis-cli shutdown
