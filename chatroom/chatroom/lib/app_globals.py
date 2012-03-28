@@ -18,5 +18,4 @@ class Globals(object):
         """
         self.cache = CacheManager(**parse_cache_config_options(config))
         self.messageQueue = []
-        self.messageQueue2 = RedisMessageQueue("chatroom:message_queue")
         self.userlist = {}

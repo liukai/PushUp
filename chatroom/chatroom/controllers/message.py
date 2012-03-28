@@ -42,8 +42,6 @@ class MessageController(BaseController):
         message = _makeMessage(nickname, content)
         app_globals.messageQueue.append(message)
 
-        app_globals.messageQueue2.push(nickname, json.dumps(content))
-
         return 'OK'
 
     @jsonify
@@ -71,7 +69,9 @@ class MessageController(BaseController):
 
         messages = q[pos:size]
         return make_success_response(messages);
+
     def _get_pos(self, size):
         if "pos" not in session:
             session["pos"] = size - 100 if size - 100 > 0 else 0
         return session["pos"]
+
