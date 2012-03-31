@@ -2,6 +2,8 @@
 
 from beaker.cache import CacheManager
 from beaker.util import parse_cache_config_options
+from message_delivery import runAutomaticMessageDelivery
+from pylons import config
 
 class Globals(object):
     """Globals acts as a container for objects available throughout the
@@ -18,3 +20,14 @@ class Globals(object):
         self.cache = CacheManager(**parse_cache_config_options(config))
         self.messageQueue = []
         self.userlist = {}
+
+        self.startMessageDelivery(config)
+
+    def startMessageDelivery(self, config):
+        enabled = config.get("pubsub_server_enabled") == "true"
+        if enabled:
+            host = config.get("pubsub_server_host")
+            port = int(config["pubsub_server_port"])
+            channelId = config["pubsub_server_port"]
+            runAutomaticMessageDelivery(self.messageQueue, (host, port),
+                                        channelId)
