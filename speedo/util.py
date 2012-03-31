@@ -38,5 +38,3 @@ def partition(elements, criteria):
         elements[begin], elements[end] = elements[end], elements[begin]
 
     return begin
-
-# --- Message Queue ---
