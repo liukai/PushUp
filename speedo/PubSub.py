@@ -25,19 +25,21 @@ class PubSub:
         self.messages.setdefault(time, []).append(data)
         self._notify(channel, time, data)
 
-    def subscribe(self, channel, callback,
+    def subscribe(self, channel, onReceive, onTimeout,
                   timeFrom = 0, timeTo = sys.maxint,
                   waitForSeconds = 0):
         if channel not in self.channels:
             messages = []
         else:
-            messages = list(self.channels[chanel][timeFrom: timeTo])
+            messages = list(self.channels[channel][timeFrom: timeTo])
+
+
         if len(messages) != 0 or waitForSeconds == 0:
-            callback(messages)
+            onReceive(messages)
             return
 
         waitUntil = now() + waitForSeconds
-        value = (timeFrom, timeTo, callback)
+        value = (timeFrom, timeTo, onReceive, onTimeout)
 
         subscribers = self.channels.setdefault(channel, RBTree())
         subscribers.setdefault(waitUntil, []).append(value)
@@ -64,25 +66,9 @@ class PubSub:
                 del channel[key]
 
     def _purgeSubscribers(self):
-        for channel in self.channels:
-            self.purge(channel, 0)
-
-# TODO: ths is an ad-hoc test and will be removed 
-# in the future.
-if __name__ == "__main__":
-    tree = PubSub(5)
-
-    def h(data):
-        print "haha"
-    def hh(data):
-        print "hehe"
-    tree.subscribe(1, h)
-    tree.subscribe(1, hh)
-
-    tree.publish(1, 1)
-    tree.publish(1, 2)
-    tree.publish(1, 3)
-    tree.publish(1, 4)
-
-
-    reactor.run()
+        current = now()
+        for _, channel in self.channels.items():
+            for _, subscribers in channel[:current].items():
+                for sub in subscribers:
+                    reactor.callLater(0, sub[3])
+            del channel[:current]

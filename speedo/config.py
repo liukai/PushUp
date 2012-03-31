@@ -5,11 +5,15 @@ LONG_POLLING_PATHS = [
 ]
 
 SERVER = {
-    "listen_client_port": 5000,
-    "listen_backend_port": 5001,
+    "listen_client_port": 8080,
+    "listen_backend_port": 8081,
 }
 
 PROXIED_SERVER = {
     "host": "localhost",
     "port": 5000
+}
+
+PUBSUB = {
+    "valid_for": 60,
 }
