@@ -123,6 +123,7 @@ class ReverseProxyResource(Resource):
             host = self.host
         else:
             host = "%s:%d" % (self.host, self.port)
+
         request.received_headers['host'] = host
         request.content.seek(0, 0)
         querystring = urlparse.urlparse(request.uri)[4]

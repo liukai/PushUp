@@ -1,19 +1,13 @@
 
-# incept path with the following pattern 
-LONG_POLLING_PATHS = [
-    "/message/event_based_update",
-]
-
-SERVER = {
-    "listen_client_port": 8080,
-    "listen_backend_port": 8081,
+REVERSE_PROXY = {
+    "port": 8000,
+    "proxied_host": ("localhost", 5000),
+    "subscription_path": ["/message/event_based_update"]
 }
 
-PROXIED_SERVER = {
-    "host": "localhost",
-    "port": 5000
-}
-
-PUBSUB = {
-    "valid_for": 60,
+PUBLISH = {
+    # expiredIn: specify the how long will the message 
+    # be removed from the pub/sub queue
+    "expiredIn": 60,
+    "port": 8081
 }

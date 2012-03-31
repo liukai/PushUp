@@ -38,3 +38,9 @@ def partition(elements, criteria):
         elements[begin], elements[end] = elements[end], elements[begin]
 
     return begin
+
+def tryParseInt(self, text, defaultValue = -1):
+    try:
+        return int(text)
+    except Exception:
+        return 0

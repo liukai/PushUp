@@ -4,6 +4,7 @@ from pubsub import PubSub
 import urlparse
 import exceptions
 import sys
+from util import *
 
 class PubSubProtocol(basic.LineReceiver):
     def lineReceived(self, line):
@@ -26,13 +27,13 @@ class PubSubFactory(protocol.ServerFactory):
             self._reportError(request)
             return
 
-        channel = self._tryParse(query["channel"][0])
+        channel = self.tryParseInt(query["channel"][0], 0)
         if channel == 0:
             self._reportError(request)
             return
 
         query.setdefault("time_from", 0)
-        timeFrom = self._tryParse(query["time_from"])
+        timeFrom = self.tryParseInt(query["time_from"], 0)
         print "time from", timeFrom
 
         notify = lambda message: self._notify(
@@ -57,10 +58,4 @@ class PubSubFactory(protocol.ServerFactory):
         request.write(
                 "<p>Invalid channel format in query</p>")
         request.finish()
-
-    def _tryParse(self, text):
-        try:
-            return int(text)
-        except Exception:
-            return 0
 
