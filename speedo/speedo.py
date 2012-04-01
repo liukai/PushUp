@@ -24,7 +24,7 @@ def startReverseProxy(config, forwardRequest):
     port = config["port"]
     subscriptionPath = config["subscription_path"]
 
-    proxy = SubscriptionProxy(proxiedHost[0], proxiedHost[0],
+    proxy = SubscriptionProxy(proxiedHost[0], proxiedHost[1],
                              '', subscriptionPath);
 
     proxy.forwardRequest = forwardRequest

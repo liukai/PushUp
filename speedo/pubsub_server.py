@@ -47,7 +47,7 @@ class PubSubFactory(protocol.ServerFactory):
         request.setResponseCode(200, "OK")
         request.responseHeaders.addRawHeader("Content-Type",
                                              "text/html")
-        request.write("<H1>It works!</H1>")
+        request.write(message)
         request.finish()
 
     def _reportError(self, request):
