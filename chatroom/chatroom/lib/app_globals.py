@@ -28,6 +28,6 @@ class Globals(object):
         if enabled:
             host = config.get("pubsub_server_host")
             port = int(config["pubsub_server_port"])
-            channelId = config["pubsub_server_port"]
+            channelId = config["pubsub_server_channel"]
             runAutomaticMessageDelivery(self.messageQueue, (host, port),
                                         channelId)
