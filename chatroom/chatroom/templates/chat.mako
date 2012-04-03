@@ -97,11 +97,12 @@ var methods = {
                call: update_client_poll }, 
 };
 var since = 0
+var minId = 0
 
 function update_evented() {
     (function poll(){
          $.ajax({ url: "/message/event_based_update",
-                 data: {"channel": "${c.channel}", "time_from": since},
+                 data: {"channel": "${c.channel}", "time_from": since, "min_id": minId},
                  success: add_new_message_nodes, 
                  error: function() { console.log("error occurs"); },
                  dataType: "json", complete: poll, timeout: 50000 });
@@ -143,6 +144,10 @@ function add_new_message_nodes(data) {
         var message = messages[i];
         add_new_message_node(message);
     }
+    console.log(data.max_id)
+    if (data.max_id != undefined && minId <= data.max_id) {
+        minId = data.max_id + 1;
+    }
 }
 function add_new_message_node(message) {
     var board = $("#messages");
@@ -153,7 +158,7 @@ function add_new_message_node(message) {
     node.attr("id", "");
 
     if (since <= message["timestamp"]) {
-        since = message["timestamp"] + 1
+        since = message["timestamp"]
     }
 
     board.prepend(node);

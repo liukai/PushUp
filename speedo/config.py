@@ -10,6 +10,6 @@ PUBLISH = {
     # be removed from the pub/sub queue
     "expiredIn": 60,
     "port": 8081,
-    "message_format": '{"result": "ok", "data": %s}',
+    "message_format": '{"result": "ok", "data": %s, "max_id": %d}',
     "wait_for": 50
 }

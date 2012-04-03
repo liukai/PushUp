@@ -37,17 +37,20 @@ class PubSubFactory(protocol.ServerFactory):
 
         query.setdefault("time_from", [0])
         timeFrom = tryParseInt(query["time_from"][0], 0)
-        print query["time_from"], timeFrom
+
+        query.setdefault("min_id", [0])
+        mid = tryParseInt(query["min_id"][0], 0)
 
         notify = lambda message: self._notify(
                 request,message)
+        print "parameters", timeFrom, mid
         self.pubsub.subscribe(channel, notify,
                               request.finish,
                               timeFrom,
+                              minId = mid,
                               waitForSeconds = self.subscriptionValidFor)
 
     def _notify(self, request, message):
-        print "Ready to notify"
         try:
             request.setResponseCode(200, "OK")
             message = self._normalize(message)
@@ -55,18 +58,18 @@ class PubSubFactory(protocol.ServerFactory):
             request.write(message)
             request.finish()
         except Exception as e:
+            print "Unhandled Error"
             print e
 
-    def _normalize(self, message):
-        messageType = type(message)
-        if messageType is str:
-            pass
-        elif messageType is list:
-            message = "[%s]" % ",".join(message)
-        else:
-            message = "[]"
+    def _normalize(self, messages):
+        if len(messages) == 0:
+            return self.messageFormat % ("[]", 0)
 
-        return self.messageFormat % message
+        maxId = messages[-1][0]
+        messages = (m for id, m in messages)
+        messages = "[%s]" % ",".join(messages)
+
+        return self.messageFormat % (messages, maxId)
 
     def _reportError(self, request):
         request.setResponseCode(400, "error")

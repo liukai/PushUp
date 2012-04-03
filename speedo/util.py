@@ -44,3 +44,12 @@ def tryParseInt(text, defaultValue = -1):
         return int(text)
     except Exception:
         return defaultValue
+
+class IdGenerator:
+    def __init__(self, initValue = 0, step = 1):
+        self.nextId = initValue
+        self.step = 1
+    def generateId(self):
+        ID = self.nextId
+        self.nextId += self.step
+        return ID

@@ -26,7 +26,28 @@ class ChannelTest(unittest.TestCase):
         self.assertEqual(2, len(c.messageQueue))
         c.subscribe(onReceive, None)
         self.assertEqual(3, len(messages))
-        self.assertEqual("['data1', 'data2', 'data3']", str(messages))
+        self.assertEqual("[(0, 'data1'), (1, 'data2'), (2, 'data3')]", str(messages))
+
+    def test_subscribe_with_id(self):
+        messages = []
+        onReceive = lambda m: self._onReceive(messages, m)
+
+        c = Channel(10)
+        c.publish("data1")
+        c.publish("data2")
+        c.publish("data3")
+
+        c.subscribe(onReceive, None)
+        self.assertEqual(3, len(messages))
+
+        c.subscribe(onReceive, None, minId = 1)
+        self.assertEqual(2, len(messages))
+
+        c.subscribe(onReceive, None, minId = 2)
+        self.assertEqual(1, len(messages))
+
+        c.subscribe(onReceive, None, minId = 3)
+        self.assertEqual(0, len(messages))
 
     def test_subscriber_notification(self):
         messages = []
@@ -41,7 +62,7 @@ class ChannelTest(unittest.TestCase):
         self.assertEqual(1, len(c.subscribers))
 
         c.publish("data", False)
-        self.assertEqual("data", "".join(messages))
+        self.assertEqual("[(0, 'data')]", str(messages))
         self.assertEqual(0, len(c.subscribers))
 
     def test_purge_message(self):
