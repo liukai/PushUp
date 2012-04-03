@@ -13,10 +13,11 @@ from chatroom.lib.response import *
 
 log = logging.getLogger(__name__)
 
-def _makeMessage(nickname, content, time = datetime.now()):
+def _makeMessage(nickname, content, messageTime):
     return {"nickname": nickname ,
             "content": content,
-            "time": time.strftime("%c")}
+            "timestamp": time.mktime(messageTime.timetuple()),
+            "time": messageTime.strftime("%c")}
 
 # Utilities
 def _long_poll(q, pos):
@@ -39,7 +40,7 @@ class MessageController(BaseController):
         else:
             nickname = "Unknown"
 
-        message = _makeMessage(nickname, content)
+        message = _makeMessage(nickname, content, datetime.now())
         app_globals.messageQueue.append(message)
 
         return 'OK'

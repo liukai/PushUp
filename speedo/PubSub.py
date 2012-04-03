@@ -22,6 +22,9 @@ class Channel:
                   timeFrom = 0, timeTo = sys.maxint,
                   waitForSeconds = 0):
         messages = self._flatten(self.messageQueue[timeFrom: timeTo])
+        print self.messageQueue
+        print self.messageQueue[timeFrom: timeTo]
+
         messages = list(messages)
 
         if len(messages) != 0 or waitForSeconds == 0:

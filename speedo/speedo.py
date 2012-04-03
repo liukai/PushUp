@@ -14,7 +14,10 @@ def main():
 def startPubSub(config):
     port = config["port"]
     expiredIn = config["expiredIn"]
-    pubSubFactory = PubSubFactory(expiredIn)
+    messageFormat = config["message_format"]
+    waitFor = config["wait_for"]
+
+    pubSubFactory = PubSubFactory(expiredIn, waitFor, messageFormat)
     reactor.listenTCP(port, pubSubFactory)
 
     return pubSubFactory

@@ -9,5 +9,7 @@ PUBLISH = {
     # expiredIn: specify the how long will the message 
     # be removed from the pub/sub queue
     "expiredIn": 60,
-    "port": 8081
+    "port": 8081,
+    "message_format": '{"result": "ok", "data": %s}',
+    "wait_for": 50
 }

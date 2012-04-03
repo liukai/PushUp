@@ -26,7 +26,7 @@ class MessageDeliverer:
     # --- Utilities ---
     def _deliver(self, message):
         jsonMessage = json.dumps(message)
-        self.socket.send(self.channel)
+        self.socket.send(self.channelId)
         self.socket.send(jsonMessage)
         self.socket.send("\r\n")
 

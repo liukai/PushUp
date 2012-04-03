@@ -88,15 +88,25 @@ body {
 }
 </style>
 <script type="text/javascript">
-methods = {
+var methods = {
     "event": { name: "Event-based Long Polling", 
-               call: update_client_poll }, 
+               call: update_evented }, 
     "multithread": { name: "Multithreading Long Polling",
                         call: update_long_polling },
     "client": { name: "Client Polling",
                call: update_client_poll }, 
 };
+var since = 0
 
+function update_evented() {
+    (function poll(){
+         $.ajax({ url: "/message/event_based_update",
+                 data: {"channel": "${c.channel}", "time_from": since},
+                 success: add_new_message_nodes, 
+                 error: function() { console.log("error occurs"); },
+                 dataType: "json", complete: poll, timeout: 50000 });
+         })();
+}
 function update() {
     methods["${c.polling}"].call();
 }
@@ -141,8 +151,11 @@ function add_new_message_node(message) {
     node.children(".name").html(message["nickname"]);
     node.children(".content").html(message["content"]);
     node.attr("id", "");
-    // TODO: Quck and dirty fix of the "UNSEEN" message in
-    // in Safari
+
+    if (since <= message["timestamp"]) {
+        since = message["timestamp"] + 1
+    }
+
     board.prepend(node);
     node.fadeIn(300);
 }
@@ -150,7 +163,7 @@ function add_new_message_node(message) {
 function add(message) {
     if (message == null || message.length == 0)
         return;
-    data = {"content": message}
+    var data = {"content": message}
     $.post("/message/add", data, function(data) {
     });
 }

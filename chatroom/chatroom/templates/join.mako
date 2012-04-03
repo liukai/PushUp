@@ -12,6 +12,7 @@ $(document).ready(function() {
     <fieldset> 
         <label for="nick">Polled By: </label>
         <select id="methodInput" name="polledBy">
+            <option value="event">Evented Long Polling</option>
             <option value="multithread">Multitheading Long Polling</option>
             <option value="client">Client Poll</option>
         </select>

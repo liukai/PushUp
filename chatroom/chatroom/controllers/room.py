@@ -17,6 +17,7 @@ class RoomController(BaseController):
         if self._tryJoin() or self._hasCheckedIn():
             c.polling = self._pollingMethod()
             c.nickname = session["nickname"]
+            c.channel = app_globals.channelId
             return render('/chat.mako')
 
         return render('/join.mako')
