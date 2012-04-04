@@ -2,7 +2,7 @@
 
 from beaker.cache import CacheManager
 from beaker.util import parse_cache_config_options
-from message_delivery import runAutomaticMessageDelivery
+from message_delivery import MessageDeliverer
 from pylons import config
 
 class Globals(object):
@@ -21,15 +21,17 @@ class Globals(object):
         self.messageQueue = []
         self.userlist = {}
 
-        self.channelId = self.startMessageDelivery(config)
+        self.channelId, self.messageDeliverer = self.startMessageDelivery(config)
 
     def startMessageDelivery(self, config):
         enabled = config.get("pubsub_server_enabled") == "true"
         channelId = 0
+        messageDeliverer = None
         if enabled:
             host = config.get("pubsub_server_host")
             port = int(config["pubsub_server_port"])
             channelId = config["pubsub_server_channel"]
-            runAutomaticMessageDelivery(self.messageQueue, (host, port),
-                                        channelId)
-        return channelId
+
+            messageDeliverer = MessageDeliverer(self.messageQueue, (host, port),
+                                                channelId)
+        return channelId, messageDeliverer

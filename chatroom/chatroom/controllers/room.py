@@ -8,32 +8,35 @@ from pylons import app_globals
 
 log = logging.getLogger(__name__)
 
-_pollMethods = ["client", "multithread", "event"]
-_defaultMethod = _pollMethods[0]
 
 class RoomController(BaseController):
+    _pollMethods = ["client", "multithread", "event"]
+    _defaultMethod = _pollMethods[0]
 
     def chat(self):
         if self._tryJoin() or self._hasCheckedIn():
-            c.polling = self._pollingMethod()
+            c.polling = self._getPollingMethod()
             c.nickname = session["nickname"]
             c.channel = app_globals.channelId
+            log.info("Incoming user: %s; polling method: %s",
+                     c.nickname, c.polling)
             return render('/chat.mako')
 
         return render('/join.mako')
 
     def leave(self):
         if "nickname" in session:
+            log.info("User %s leaves", session["nickname"])
             del session["nickname"]
         return render('/join.mako')
 
-    def _pollingMethod(self):
+    def _getPollingMethod(self):
         if "polledBy" not in request.params:
-            return _defaultMethod
+            return RoomController._defaultMethod
 
         method = request.params["polledBy"]
-        if method not in _pollMethods:
-            return _defaultMethod
+        if method not in RoomController._pollMethods:
+            return RoomController._defaultMethod
 
         return method
     def _tryJoin(self):

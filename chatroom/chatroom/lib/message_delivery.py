@@ -10,7 +10,8 @@ class MessageDeliverer:
         self.pos = 0
         self.messageQueue = messageQueue
         self.channelId = channelId + "\t"
-        self.socket = self._connectToServer(pubServerInfo)
+        self.pubServerInfo = pubServerInfo
+        self.socket = self._connectToServer(self.pubServerInfo)
 
     def notify(self):
         """ Check the new messages and deliver them to pub/sub server """
@@ -26,6 +27,7 @@ class MessageDeliverer:
     # --- Utilities ---
     def _deliver(self, message):
         jsonMessage = json.dumps(message)
+
         self.socket.send(self.channelId)
         self.socket.send(jsonMessage)
         self.socket.send("\r\n")

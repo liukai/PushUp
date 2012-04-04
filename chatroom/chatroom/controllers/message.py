@@ -21,14 +21,12 @@ def _makeMessage(nickname, content, messageTime):
 
 # Utilities
 def _long_poll(q, pos):
-    # TODO:
     expired = datetime.now() + timedelta(0, 45);
     while expired >= datetime.now() and pos >= len(q):
         time.sleep(0.5)
 
 def _no_poll(q, pos):
     return None
-
 
 class MessageController(BaseController):
 
@@ -41,7 +39,11 @@ class MessageController(BaseController):
             nickname = "Unknown"
 
         message = _makeMessage(nickname, content, datetime.now())
+        log.info("New message: %s" % str(message))
         app_globals.messageQueue.append(message)
+
+        if app_globals.messageDeliverer:
+            app_globals.messageDeliverer.notify()
 
         return 'OK'
 
@@ -51,9 +53,11 @@ class MessageController(BaseController):
 
     @jsonify
     def update_long_poll(self):
+        log.info("Multithreading Update")
         return self._update_message(_long_poll)
 
     def _update_message(self, pending = _no_poll):
+        log.info("Client poll Update.")
         q = app_globals.messageQueue
 
         size = len(q)
