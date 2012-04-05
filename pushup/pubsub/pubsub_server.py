@@ -8,6 +8,9 @@ from util import *
 
 class PubSubProtocol(basic.LineReceiver):
     def lineReceived(self, line):
+        # TODO: remove the print
+        # TODO: should add error handling for the malfromed
+        # messages
         print 'LINE', line
         parts = line.split('\t', 1)
         channel = int(parts[0])
@@ -17,9 +20,10 @@ class PubSubProtocol(basic.LineReceiver):
 class PubSubFactory(protocol.ServerFactory):
     protocol = PubSubProtocol
 
-    def __init__(self, validFor, subscriptionValidFor, messageFormat):
-        self.pubsub = PubSub(validFor)
-        self.subscriptionValidFor = subscriptionValidFor
+    def __init__(self, messageTimeout,
+                 subscriptionTimeout, messageFormat):
+        self.pubsub = PubSub(messageTimeout)
+        self.subscriptionTimeout = subscriptionTimeout
         self.messageFormat = messageFormat
 
     def subscribe(self, request):
@@ -27,13 +31,14 @@ class PubSubFactory(protocol.ServerFactory):
         query = urlparse.parse_qs(urlComponents.query)
 
         if "channel" not in query:
-            self._reportError(request)
+            self._reportError(request,
+                              "expected 'channel' in the request")
             return
 
         channel = tryParseInt(query["channel"][0], 0)
         if channel == 0:
-            self._reportError(request)
-            return
+            return self._reportError(request,
+                              "'channel' value should be number")
 
         query.setdefault("time_from", [0])
         timeFrom = tryParseInt(query["time_from"][0], 0)
@@ -41,15 +46,16 @@ class PubSubFactory(protocol.ServerFactory):
         query.setdefault("min_id", [0])
         mid = tryParseInt(query["min_id"][0], 0)
 
-        notify = lambda message: self._notify(
-                request,message)
+        notify = lambda message: self._notify(request,message)
         print "parameters", timeFrom, mid
+
         self.pubsub.subscribe(channel, notify,
                               request.finish,
                               timeFrom,
                               minId = mid,
-                              waitForSeconds = self.subscriptionValidFor)
+                              timeoutSec = self.subscriptionTimeout)
 
+    # --- Utilities ---
     def _notify(self, request, message):
         try:
             request.setResponseCode(200, "OK")
@@ -71,12 +77,11 @@ class PubSubFactory(protocol.ServerFactory):
 
         return self.messageFormat % (messages, maxId)
 
-    def _reportError(self, request):
+    def _reportError(self, request, errorMessage):
         request.setResponseCode(400, "error")
         request.responseHeaders.addRawHeader("Content-Type",
                                              "text/html")
         request.write("<H1>Error</H1>")
-        request.write(
-                "<p>Invalid channel format in query</p>")
+        request.write("<p>%s</p>" % errorMessage)
         request.finish()
 

@@ -32,7 +32,7 @@ class SubscribableReverseProxy(ReverseProxyResource):
             self.host, self.port,
             self.path + '/' + urlquote(path, safe=""),
             self.inceptedPaths,
-            self.myReactor)
+            self.reactor)
         proxy.forwardRequest = self.forwardRequest
         return proxy
 

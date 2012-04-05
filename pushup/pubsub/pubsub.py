@@ -1,3 +1,5 @@
+""" PubSub Service """
+
 import sys
 from twisted.internet import reactor, task
 from bintrees.rbtree import RBTree
@@ -5,6 +7,7 @@ from bintrees.rbtree import RBTree
 from util import now, toUnixTime, partition, IdGenerator
 
 class Channel:
+    """ Channel provides pub/sub service for a single channel"""
     def __init__(self, expiredIn):
         self.messageQueue = RBTree()
         self.subscribers = RBTree()
@@ -15,27 +18,43 @@ class Channel:
         task.LoopingCall(self.purgeSubscribers).start(1, False)
 
     def publish(self, data, isAsync = True):
+        """ Publish the data to the message queue. After messages
+            are published, interested subscribers will be notified.
+            @params isAsync: specify if the subscribers should be
+                notified asynchronously or synchronously.
+        """
         time = now()
         dataWithId = (self.idGenerator.generateId(), data)
         self.messageQueue.setdefault(time, []).append(dataWithId)
         self.notify(time, dataWithId, isAsync)
 
-    # TODO: should rename to: subscribeByTime
     def subscribe(self, onReceive, onTimeout,
                   timeFrom = 0, timeTo = sys.maxint,
-                  minId = 0, waitForSeconds = 0):
+                  minId = 0, timeoutSec = 0):
+        """ subscribe messages within a specific time span.
+            @params onReceive: if the interested messages are
+                retrieved, onReceive will be invoked to notify
+                the subscribers.
+            @params onTimeout: if subscriber waits for more than
+                `timeoutSec` seconds, onTimeout will be invoked.
+            @params timeFrom: only retrieve messages after timestamp
+                `timeFrom`; time is represented in unix time.
+            @params timeTo: only retrieve messages before timestamp
+                `timeTo`; time is represented in unix time.
+            @params minId: this is HACK...
+        """
         messages = self._flatten(self.messageQueue[timeFrom: timeTo], minId)
         messages = list(messages)
         print messages
 
-        if len(messages) != 0 or waitForSeconds == 0:
+        if len(messages) != 0 or timeoutSec == 0:
             onReceive(messages)
             return
 
-        waitUntil = now() + waitForSeconds
-        value = (timeFrom, timeTo, onReceive, onTimeout)
+        waitUntil = now() + timeoutSec
+        subscription = (timeFrom, timeTo, onReceive, onTimeout)
 
-        subscribers = self.subscribers.setdefault(waitUntil, []).append(value)
+        self.subscribers.setdefault(waitUntil, []).append(subscription)
 
     def notify(self, time, data, isAsync = True):
         # purge expired subscribers
@@ -87,10 +106,10 @@ class PubSub:
 
     def subscribe(self, channel, onReceive, onTimeout,
                   timeFrom = 0, timeTo = sys.maxint, minId = 0,
-                  waitForSeconds = 0):
+                  timeoutSec = 0):
         if channel not in self.channels:
             self.channels[channel] = Channel(self.expiredIn)
         self.channels[channel].subscribe(onReceive, onTimeout,
                                          timeFrom, timeTo,
                                          minId,
-                                         waitForSeconds)
+                                         timeoutSec)
