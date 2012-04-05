@@ -58,7 +58,7 @@ class ChannelTest(unittest.TestCase):
         c = Channel(10)
 
         self.assertEqual(0, len(c.subscribers))
-        c.subscribe(onReceive, None, waitForSeconds = 1)
+        c.subscribe(onReceive, None, timeoutSec = 1)
         self.assertEqual(1, len(c.subscribers))
 
         c.publish("data", False)
@@ -84,7 +84,7 @@ class ChannelTest(unittest.TestCase):
         onTimeout = lambda: self._onTimeout(messages)
 
         self.assertEqual(0, len(c.subscribers))
-        c.subscribe(None, onTimeout, waitForSeconds = 1)
+        c.subscribe(None, onTimeout, timeoutSec = 1)
         self.assertEqual(1, len(c.subscribers))
         c.purgeSubscribers()
         self.assertEqual(1, len(c.subscribers))
