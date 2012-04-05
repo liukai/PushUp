@@ -1,2 +1,21 @@
 \section {Overview}
+\subsection{Design Goals and Rationale}
+
+\begin{itemize}
+\item {\bf Large active connection}  
+    As the long polling technologies requires the server to keep the polliing request active for a period of time,
+    large number of concurrent clients will generate lots of active connections. One of our goal is to minimize the 
+    cost of maintaining these active connections, which could in turn enhance the system's scalability.
+     by the degree
+    in which a client can be served by different servers without affecting the results [48].
+    Scalability is the main issue in a Push model. Web servers usually create a thread per
+    client (connection). Libraries such as Java NIO [62] can achieve a thread per request,
+    instead of per connection. However, an HTTP based AJAX push solution will have an
+    outstanding request waiting on the server which will be used to send a response to the
+    client the instant an asynchronous event occurs. This however will break the ”thread
+    per request” model. Better technologies are needed on the server side, in order to serve
+    a growing number of client requests.
+\item {\bf Transparancy: two folds} 
+\item {\bf Generality} 
+\end{itemize}
 

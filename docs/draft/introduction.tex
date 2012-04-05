@@ -1,2 +1,19 @@
 \section {Introduction}
+In computer science the term ``Push" (also known as ``server push''), describes a type of Internet-based communication where the request for a given transaction is initiated by the server. By contrast the term “pull” describes the client-initiated communication.
+
+Traditionally, the http web server is the role model of the pull model, where the clients initiate the request and the server respond it. However, with the increasing popularity of Ajax[ref] people are no longer satisfy with the old-fashion request-response communication. Instead, they are looking for more “interactive” websites. That is, the client should be informed of the latest updates from the server as soon as possible.  
+
+Unfortunately, the classical http communication model, for security reasons, imposes a limitation that all browser/server communication to be initiated by the browser. So in order to build the “interactive” web page, people resort to many different approaches.
+
+\begin{itemize}
+\item Client polling: one approach is to let the browser poll the latest message from server periodically. However, this method can result in large amount of HTTP requests.
+\item Plugins: since the http itself doesn't provide any mechanism for server push, many resort to various plugins to achieve more flexible communication. Plugins, such as Flash, Silverlight, Javalet, etc, were used for this purpose. However plugins is non-standard and requires users' extra effort to install and configure them. 
+\end{itemize}
+
+Given those drawbacks, we focus on the another solution: long polling.  With long polling the http server will not terminate a connection after response data has been delivered to a client, which enables the server to notify the clients immediately if event occurred. But long polling also bring about new challenges since it requires the server to keep the open connections. It would be OK for small scale websites to keep those connection open, but for web sites with large Average concurrent users this solution will create unacceptable overhead.
+
+So in this paper we present the BLAH, a ….
+* Event-based approach to keep large amount of the active connection. 
+* Reverse proxy [Ref: why reverse proxy works well on high load server, http://kovyrin.net/2006/05/18/nginx-as-reverse-proxy/]
+
 
