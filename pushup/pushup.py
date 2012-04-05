@@ -1,5 +1,5 @@
-from pubsub_server import PubSubFactory
-from subscription_proxy import SubscriptionProxy
+from pubsub.pubsub_server import PubSubFactory
+from proxy.subscribable_reverse_proxy import SubscribableReverseProxy
 from twisted.internet import reactor, protocol
 from twisted.protocols import basic
 from twisted.web import server
@@ -27,7 +27,7 @@ def startReverseProxy(config, forwardRequest):
     port = config["port"]
     subscriptionPath = config["subscription_path"]
 
-    proxy = SubscriptionProxy(proxiedHost[0], proxiedHost[1],
+    proxy = SubscribableReverseProxy(proxiedHost[0], proxiedHost[1],
                              '', subscriptionPath);
 
     proxy.forwardRequest = forwardRequest
@@ -38,3 +38,4 @@ def startReverseProxy(config, forwardRequest):
 
 if __name__ == "__main__":
     main()
+
