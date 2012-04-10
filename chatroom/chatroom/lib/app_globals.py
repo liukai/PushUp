@@ -4,6 +4,7 @@ from beaker.cache import CacheManager
 from beaker.util import parse_cache_config_options
 from message_delivery import MessageDeliverer
 from pylons import config
+from profiler import *
 
 class Globals(object):
     """Globals acts as a container for objects available throughout the
@@ -22,6 +23,7 @@ class Globals(object):
         self.userlist = {}
 
         self.channelId, self.messageDeliverer = self.startMessageDelivery(config)
+        self.messageCounter = self.startProfiling(config)
 
     def startMessageDelivery(self, config):
         enabled = config.get("pubsub_server_enabled") == "true"
@@ -35,3 +37,16 @@ class Globals(object):
             messageDeliverer = MessageDeliverer(self.messageQueue, (host, port),
                                                 channelId)
         return channelId, messageDeliverer
+
+    def startProfiling(self, config):
+        messageCounter = SafeCounter()
+        if config.get("profile_enabled") != "true":
+            return messageCounter
+
+        interval = float(config.get("profile_interval"))
+        output = open(config.get("profile_output"), "w")
+        runReportUsage(interval, output, messageCounter)
+
+        return messageCounter
+
+

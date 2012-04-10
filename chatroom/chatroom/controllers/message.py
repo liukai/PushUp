@@ -57,6 +57,7 @@ class MessageController(BaseController):
         return self._update_message(_long_poll)
 
     def _update_message(self, pending = _no_poll):
+        app_globals.messageCounter.increase()
         log.info("Client poll Update.")
         q = app_globals.messageQueue
 
@@ -71,6 +72,7 @@ class MessageController(BaseController):
 
         session["pos"] = size
         session.save();
+        app_globals.messageCounter.decrease()
 
         messages = q[pos:size]
         return make_success_response(messages);
