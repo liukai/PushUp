@@ -29,18 +29,21 @@ def startReverseProxy(config, forwardRequest):
 
     reactor.listenTCP(port, site, config['backlog'])
 
+def profile(reporter, factory):
+    print "calling", factory.pubsub.subscriber_size()
+    basicFormatter = " :Memory Usage: %f, CPU Usage: %f\n"
+    reporter.report(0,
+                formatter = str(factory.pubsub.subscriber_size()) +\
+                            basicFormatter)
 def runProfiler(config, factory):
     if config["enabled"] != True:
         return
 
     reporter = config["reporter"](output = open(config["output"], "w"))
     interval = config["interval"]
-    basicFormatter = " :Memory Usage: %f, CPU Usage: %f\n"
 
-    profile = lambda: reporter.report(0,
-                formatter = str(factory.pubsub.subscriber_size()) +\
-                            basicFormatter)
-    task.LoopingCall(profile).start(interval, False)
+    call_profile = lambda: profile(reporter, factory)
+    task.LoopingCall(call_profile).start(interval, False)
 
 def main():
     pubSubFactory = startPubSub(config.PUBLISH)

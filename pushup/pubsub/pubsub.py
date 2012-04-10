@@ -19,8 +19,8 @@ class Channel:
 
     def subscriber_size(self):
         count = 0
-        for s in _flatten(self.subscribers):
-            count += 1
+        for s in self.subscribers.values():
+            count += len(s)
         return count
 
     def publish(self, data, isAsync = True):
@@ -120,4 +120,4 @@ class PubSub:
                                          minId,
                                          timeoutSec)
     def subscriber_size(self):
-        return sum(c.subscriber_size() for c in self.channels)
+        return sum(c.subscriber_size() for c in self.channels.values())
