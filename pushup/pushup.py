@@ -12,7 +12,7 @@ def startPubSub(config):
     waitFor = config["wait_for"]
 
     pubSubFactory = PubSubFactory(expiredIn, waitFor, messageFormat)
-    reactor.listenTCP(port, pubSubFactory)
+    reactor.listenTCP(port, pubSubFactory, config['backlog'])
 
     return pubSubFactory
 
@@ -27,7 +27,7 @@ def startReverseProxy(config, forwardRequest):
     proxy.forwardRequest = forwardRequest
     site = server.Site(proxy)
 
-    reactor.listenTCP(port, site)
+    reactor.listenTCP(port, site, config['backlog'])
 
 def runProfiler(config, factory):
     if config["enabled"] != True:

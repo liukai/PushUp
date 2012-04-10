@@ -5,7 +5,8 @@ import usage_reporter
 REVERSE_PROXY = {
     "port": 8080,
     "proxied_host": ("localhost", 5000),
-    "subscription_path": ["/message/event_based_update"]
+    "subscription_path": ["/message/event_based_update"],
+    "backlog": 10000
 }
 
 PUBLISH = {
@@ -14,7 +15,8 @@ PUBLISH = {
     "expiredIn": 60,
     "port": 8081,
     "message_format": '{"result": "ok", "data": %s, "max_id": %d}',
-    "wait_for": 50
+    "wait_for": 50,
+    "backlog": 10000
 }
 
 PROFILE = {
