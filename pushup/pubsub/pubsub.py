@@ -51,7 +51,6 @@ class Channel:
         """
         messages = self._flatten(self.messageQueue[timeFrom: timeTo], minId)
         messages = list(messages)
-        print messages
 
         if len(messages) != 0 or timeoutSec == 0:
             onReceive(messages)

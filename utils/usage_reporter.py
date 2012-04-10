@@ -11,5 +11,6 @@ class UsageReporter:
         memory = self.process.get_memory_percent()
         cpu = self.process.get_cpu_percent(interval)
         self.output.write(formatter % (memory, cpu))
+        self.output.flush()
         print formatter % (memory, cpu)
 
