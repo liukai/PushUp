@@ -1,3 +1,6 @@
+import sys
+sys.path.append("../utils")
+import usage_reporter
 
 REVERSE_PROXY = {
     "port": 8080,
@@ -13,3 +16,12 @@ PUBLISH = {
     "message_format": '{"result": "ok", "data": %s, "max_id": %d}',
     "wait_for": 50
 }
+
+PROFILE = {
+    "enabled": True,
+    "interval": 1,
+    "reporter": usage_reporter.UsageReporter,
+    "output": "profile.log"
+}
+
+

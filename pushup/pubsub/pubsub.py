@@ -17,6 +17,12 @@ class Channel:
         task.LoopingCall(self.purgeMessageQueue).start(1, False)
         task.LoopingCall(self.purgeSubscribers).start(1, False)
 
+    def subscriber_size(self):
+        count = 0
+        for s in _flatten(self.subscribers):
+            count += 1
+        return count
+
     def publish(self, data, isAsync = True):
         """ Publish the data to the message queue. After messages
             are published, interested subscribers will be notified.
@@ -113,3 +119,5 @@ class PubSub:
                                          timeFrom, timeTo,
                                          minId,
                                          timeoutSec)
+    def subscriber_size(self):
+        return sum(c.subscriber_size() for c in self.channels)

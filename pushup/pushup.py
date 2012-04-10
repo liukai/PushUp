@@ -1,15 +1,9 @@
 from pubsub.pubsub_server import PubSubFactory
 from proxy.subscribable_reverse_proxy import SubscribableReverseProxy
-from twisted.internet import reactor, protocol
+from twisted.internet import reactor, protocol, task
 from twisted.protocols import basic
 from twisted.web import server
 import config
-
-def main():
-    pubSubFactory = startPubSub(config.PUBLISH)
-    startReverseProxy(config.REVERSE_PROXY, pubSubFactory.subscribe)
-
-    reactor.run()
 
 def startPubSub(config):
     port = config["port"]
@@ -35,6 +29,25 @@ def startReverseProxy(config, forwardRequest):
 
     reactor.listenTCP(port, site)
 
+def runProfiler(config, factory):
+    if config["enabled"] != True:
+        return
+
+    reporter = config["reporter"](output = open(config["output"], "w"))
+    interval = config["interval"]
+    basicFormatter = " :Memory Usage: %f, CPU Usage: %f\n"
+
+    profile = lambda: reporter.report(0,
+                formatter = str(factory.pubsub.subscriber_size()) +\
+                            basicFormatter)
+    task.LoopingCall(profile).start(interval, False)
+
+def main():
+    pubSubFactory = startPubSub(config.PUBLISH)
+    startReverseProxy(config.REVERSE_PROXY, pubSubFactory.subscribe)
+    runProfiler(config.PROFILE, pubSubFactory)
+
+    reactor.run()
 
 if __name__ == "__main__":
     main()
