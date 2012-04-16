@@ -1,19 +1,25 @@
 \section {Introduction}
-In computer science the term ``Push" (also known as ``server push''), describes a type of Internet-based communication where the request for a given transaction is initiated by the server. By contrast the term “pull” describes the client-initiated communication.
+In computer science the term ``Push" (also known as ``server push''), describes a type of Internet-based communication where the request for a given transaction is initiated by the server. By contrast the term ``pull" describes the client-initiated communication\cite{PushOverview}.
 
-Traditionally, the http web server is the role model of the pull model, where the clients initiate the request and the server respond it. However, with the increasing popularity of Ajax[ref] people are no longer satisfy with the old-fashion request-response communication. Instead, they are looking for more “interactive” websites. That is, the client should be informed of the latest updates from the server as soon as possible.  
+Traditionally, the http web server is the role model of the pull model, where the clients initiate the request and the server respond it. However, with the increasing popularity of Ajax\cite{Ajax} people are no longer satisfy with the old-fashion request-response communication. Instead, they are looking for more ''interactive" websites. That is, the client should be informed of the latest updates from the server as soon as possible.  
 
-Unfortunately, the classical http communication model, for security reasons, imposes a limitation that all browser/server communication to be initiated by the browser. So in order to build the “interactive” web page, people resort to many different approaches.
+Unfortunately, the classical http communication model, for security reasons, imposes a limitation that all browser/server communication to be initiated by the browser. So in order to build the ``interactive" web page, people resort to many different approaches.
 
 \begin{itemize}
 \item Client polling: one approach is to let the browser poll the latest message from server periodically. However, this method can result in large amount of HTTP requests.
-\item Plugins: since the http itself doesn't provide any mechanism for server push, many resort to various plugins to achieve more flexible communication. Plugins, such as Flash, Silverlight, Javalet, etc, were used for this purpose. However plugins is non-standard and requires users' extra effort to install and configure them. 
+\item Plugins: since the http itself doesn't provide any original mechanism for server push, many resort to various plugins to achieve more complicated server/client communication. Plugins, such as Flash, Silverlight, Javalet, etc, were used for this purpose. However plugins is non-standard and requires users' extra effort to install and configure them. Also, on the development side, the plugins may lead to the incompatibility issues among different operating systems or browsers. 
 \end{itemize}
 
-Given those drawbacks, we focus on the another solution: long polling.  With long polling the http server will not terminate a connection after response data has been delivered to a client, which enables the server to notify the clients immediately if event occurred. But long polling also bring about new challenges since it requires the server to keep the open connections. It would be OK for small scale websites to keep those connection open, but for web sites with large Average concurrent users this solution will create unacceptable overhead.
+Given those drawbacks, we focus on the another solution: long polling\cite{LongPolling}.  With long polling the http server will not terminate a connection after the client sends the polling request; instead, the server will keep the connection open for a period of time until (1) a new message arrives in the server side or (2) the request expired. 
 
-So in this paper we present the BLAH, a ….
-* Event-based approach to keep large amount of the active connection. 
-* Reverse proxy [Ref: why reverse proxy works well on high load server, http://kovyrin.net/2006/05/18/nginx-as-reverse-proxy/]
+This strategy enables the server side to notify the clients immediately if events occurred. However long polling also has its own draw back: keeping a lot of active connections may consume huge amount of server resource. For small scale websites this will not be a problem, but for websites with large traffic, the number of active connections may become a serious bottleneck.
 
+To address these problems, in this project we present the event-based PushUp\cite{UnixBook} system that is dedicated to handle large active connections.
+
+As illustrated in figure [TODO: A PIC IS NEEDED], the PushUp lies in between of clients and backend servers. It has two responsibilities:
+
+\begin {itemize}
+\item An event-based reverse proxy\cite{ReverseProxy} retrieves resources on behalf of a client from one or more servers. When there are many requests coming to the server, the server needs to create many parallel threads/processes and keep them running while client will close connection. If client has slow connection, web server process will wait too long and resource consumption will increase very fast.
+\item An event-based Message Queue\cite{PubSub} that can keep active connections with very low overhead. The event-based message queue is dedicated for the long polling request from the client. In this architecture the backend servers are the publisher and the clients the subscribers.
+\end {itemize}
 

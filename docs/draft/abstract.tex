@@ -1,0 +1,10 @@
+\begin{abstract}
+Traditionally, the http communication follows the pull model, where the client initiates the request and server responds it. However, for web pages that demand ``instant interaction'' between client/server or client/client, the pull model falls short because the frequent client-initiated communication will incur a huge overhead.
+
+To overcome the problem, people proposed the ``long polling'' (also dubbed as ``comet''). With the long polling technology the http server will not terminate a connection after responded data has been delivered to a client; instead, the server will keep the connection alive so when new event occurs the server can send the updated message to the client immediately.
+
+However this approach requires the server to keep a large amount of active connections. To efficiently manage the connections we proposed to add an event-based reverse proxy server in between of client and backend servers. So when a new client/server session is established, the reverse will (1) keep the the connection open, and (2) retrieves resources on behalf of a client from backend servers. Meanwhile the backend servers can send the updates to the proxy server and the proxy server
+will propagate the updates to related active clients.
+
+We plan to benchmark our reverse proxy software with Twitter stream-like applications which will constantly be publishing new feeds to a large number of subscribers. We will compare the performance of the reverse proxy with the traditional opening and closing connection to evaluate the strengths and weaknesses of our approach. 
+\end{abstract}
