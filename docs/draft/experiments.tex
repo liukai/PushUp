@@ -4,31 +4,59 @@ In this section, we conducted experiments to evaluate the performance of several
 
 \subsection{Settings \\}
 
-\subsection{Evaluation Metrics \\}
-We used the following variables to characterize the performance of different notification methods.
+\subsubsection{Evaluation Metrics \\}
+During the experiments, we used the following parameters to benchmark 
+the performance of message notification mechanisms. These parameters help 
+to characterize different kinds of context.
+
 \begin{itemize}
-    \item {\bf Number of concurrent connections}: This variable allows to evaluate the scalability of different methods.
-    \item {\bf Publish Interval}: This variable controls the frequency of event publication by the server. 
-    \item {\bf Polling interval}: This variable determines how long will the method send a polling request to the server.
+    \item {\bf Number of concurrent connections}: This variable allows us 
+         to evaluate the scalability of different methods.
+    \item {\bf Publish Interval}: This variable controls the frequency of 
+         event publication by the server. 
+    \item {\bf Polling interval}: This variable determines how long will 
+        the method send a polling request to the server.
 \end{itemize}
 
-We are interested in the following features of the polling methods:
+We used the following metrics to evaluate the performance of different
+methods.
 \begin{itemize}
-    \item {\bf Network Traffic (NT)}: TODO
-    \item {\bf Mean Publish Trip time (MPT)}: The publish trip-time is the time elapsed between the creation of a data by the server and its reception by the client.
-    It shows how long it takes for the client to be updated when an event occurs.
-    \item {\bf Server Memory Usage (SMU)}: In many real world long polling system, the polling requests spent most of their time waiting for the new events.[source needed] 
-        Thus, memory cost for each idle polling requests is critical to the overall performance.
+    \item {\bf Network Traffic (NT)}: NT evaluates the network usage for
+        different event notification methods.
+    \item {\bf Mean Publish Trip time (MPT)}: The publish trip-time is 
+        the time elapsed between the creation of a data by the server and 
+        its reception by the client. It shows how long it takes for the 
+        client to be updated when an event occurs.
+    \item {\bf Received Message Percentage (RMP)}: RMP indicates the data 
+        loss in during the network communication. 
+    \item {\bf Server Memory Usage (SMU)}: In many real world long polling 
+        system, the polling requests spent most of their time waiting for 
+        the new events.[source needed] Thus, memory cost for each idle 
+        polling requests is critical to the overall performance.
 \end{itemize}
 
-\subsection{Evaluation Environment \\}
+\subsubsection{Evaluation Environment \\}
 The experiments are done in CMU's PEACE cluster. Each machine in the cluster has a 4 CPU cores(AMD Opteron Processor 4130, 2600 MHz, 512K cache size), 8 GB RAM and 1 physical 581 GB disk.
 
-\subsection{Measuring the Network Traffic\\}
+\subsection{Push Model vs. Poll Model\\}
+
+* Design goal: Comparison between different models, what are the expected experimental results.
+
+* How do you conduct the experiment?
+
+* What is the exp results?
+
+* Experiment analysis: What can you see from the experiment results? Does it match your expectation?
 
 One of the biggest advantage of long polling is the significant reduction of frequently client polls.
 
 In this section, we will conduct experiments to figure the network traffic incurred by three different strategies:
+
+\subsection{Event vs. Thread\\}
+
+
+\subsection{Extending PushUp Server}
+
 
 \begin{itemize}
     \item {\bf client polling (CP): } Client will initiate an http request to the server polling for the latest updates on a regular basis (in the experiments we set the polling frequency to be 1 second).

@@ -1,19 +1,33 @@
-\section {Design and Implemenation\\}
+\section {Design and Implementation\\}
 
 \subsection{Reactor Model\\}
-The PushUp Server runs atop of the Twisted framework\cite{Twisted}, which is a event-based network programming framework. The highlight of the Twisted is its reactor model\cite{Reactor}.
+The PushUp Server runs atop of the Twisted framework\cite{Twisted}, which 
+adopts the reactor model\cite{Reactor} to enable event-driven mechanism.
 
-The reactor is the core of the event loop inside the framework. Event loop is a higher level abstraction of multiplexing model in Linux/Unix (kqueue in Unix and epoll in Linux).
+The reactor manages how to register handlers for particular event types, and 
+how to activate event handlers as events occur within a single thread. 
+Moreover the reactor can manages multiple event-loops without introducing 
+additional threads. 
 
-The responsiblities of a event loop is to wait for and dispatches incoming ``events", which will trigger the internal or external "event handlers"(named ``Deferred" in twisted framework, which can be understood as the advanced ``callback" function).
+Figure \ref{fig:eventloop} demonstrates the how the execution switches
+between the event loops and user code. Figure \ref{fig:eventloop_flow} 
+further illustrates the detailed work flow.
 
-The event loop runs in a single thread and its workflow loop is illustrated in Figure\ref{fig:eventloop}.
+The reactor has well encapsulated the operating systems' underlying 
+event notification mechanism (normally it is kqueue() in Unix and 
+epoll() in Linux) and presents a convenient programming interface
+for the developers.
 
 \begin{figure}[htb!]
-\centering%
-    \includegraphics[scale=0.50]{figures/eventloop.eps}
-    \caption{Twisted Event Loop}
-    \label{fig:eventloop}
+    \centering%
+    \includegraphics[scale=0.70]{figures/mainloop.eps}
+    \caption{Work flow of Twisted Reactor Model}
+    \label{fig:mainloop}
+\end{figure}
+\begin{figure}[htb!]
+    \includegraphics[scale=0.50]{figures/eventloop_flow.eps}
+    \caption{The Sequence Diagram of the Reactor Model}
+    \label{fig:eventloop_flow}
 \end{figure}
 
 
@@ -34,7 +48,9 @@ Publisher:
 Subscriber: 
 
     * General Design
+
     * Client Design
+
     * Just 50 seconds
 
 Message Management
