@@ -1,8 +1,27 @@
 \section {Evaluation\\}
 
-TODO: Overview will be placed here.
+In this section, we conducted experiments to evaluate the performance of several different polling methods.
 
-\subsection{Experiment Setup \\}
+\subsection{Settings \\}
+
+\subsection{Evaluation Metrics \\}
+We used the following variables to characterize the performance of different notification methods.
+\begin{itemize}
+    \item {\bf Number of concurrent connections}: This variable allows to evaluate the scalability of different methods.
+    \item {\bf Publish Interval}: This variable controls the frequency of event publication by the server. 
+    \item {\bf Polling interval}: This variable determines how long will the method send a polling request to the server.
+\end{itemize}
+
+We are interested in the following features of the polling methods:
+\begin{itemize}
+    \item {\bf Network Traffic (NT)}: TODO
+    \item {\bf Mean Publish Trip time (MPT)}: The publish trip-time is the time elapsed between the creation of a data by the server and its reception by the client.
+    It shows how long it takes for the client to be updated when an event occurs.
+    \item {\bf Server Memory Usage (SMU)}: In many real world long polling system, the polling requests spent most of their time waiting for the new events.[source needed] 
+        Thus, memory cost for each idle polling requests is critical to the overall performance.
+\end{itemize}
+
+\subsection{Evaluation Environment \\}
 The experiments are done in CMU's PEACE cluster. Each machine in the cluster has a 4 CPU cores(AMD Opteron Processor 4130, 2600 MHz, 512K cache size), 8 GB RAM and 1 physical 581 GB disk.
 
 \subsection{Measuring the Network Traffic\\}

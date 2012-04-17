@@ -1,4 +1,5 @@
-\begin{abstract}
+\begin{abstract} 
+
 Traditionally, the http communication follows the pull model, where the client initiates the request and server responds it. However, for web pages that demand ``instant interaction'' between client/server or client/client, the pull model falls short because the frequent client-initiated communication will incur a huge overhead.
 
 To overcome the problem, people proposed the ``long polling'' (also dubbed as ``comet''). With the long polling technology the http server will not terminate a connection after responded data has been delivered to a client; instead, the server will keep the connection alive so when new event occurs the server can send the updated message to the client immediately.
