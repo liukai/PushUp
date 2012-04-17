@@ -1,4 +1,4 @@
-\section {Introduction}
+\section {Introduction\\}
 Traditionally, the web server is a classical example of the request/response 
 model, where the clients can retrieve the resource from the server, but the 
 server cannot push the data to the client actively. 
@@ -13,7 +13,8 @@ proposed to build a more responsive site:
 \begin{itemize}
 \item Client Pull: the client pull approach is very easy to implement because 
 it is stateless and the web server doesn't need to put much effort to modify 
-its architecture. The work flow of client pull is illustrated in Figure
+its architecture. However, this approach will generate lots of http requests.
+The work flow of client pull is illustrated in Figure
 \ref{fig:client_pull}.
 
 \item Plugins: since the HTTP itself doesn't provide any mechanism for server 
@@ -31,6 +32,8 @@ will not terminate the connection immediately; Instead, the server will keep
 the connection open for a period of time until (1) a new event arrives or 
 (2) the request expired.
 
+The benefit to long-polling is that there is less back-and-forth between the client and server. The server is in control of the timing, so updates to the browser can be made within milliseconds. This makes it ideal for some highly interactive web applications.
+
 \begin{figure}[htb!]
 \centering
     \includegraphics[scale=0.70]{figures/client_pull.eps}
@@ -41,14 +44,10 @@ the connection open for a period of time until (1) a new event arrives or
     \label{fig:long_polling}
 \end{figure}
 
-
-Compared with client pull strategy, long polling effectively reduces the network 
-traffic and is more responsive to the events occur in the server side. Moreover, 
-the long polling strategy completely conforms the HTTP and thus guarantees 
-the compatibility among different operation systems and browsers.
-
-But long polling requires the server to maintain large number of active 
-connections, which may consume huge amount of server resource.
+The down-side of long polling is that the server may have to deal with large
+number of active connections between the clients and the servers. For example,
+if you have one million users and, 10\% of them will be online. In this case,
+the server should be able to hold at least 100,000 concurrent connections.
 
 To address these problems, we present the event-based\cite{UnixBook}  long polling 
 server PushUp that can provide long polling service with less resource cost.

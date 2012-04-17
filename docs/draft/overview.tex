@@ -1,33 +1,33 @@
-\section {System Overview}
-\subsection{Problem with the existing designs\\}
-\begin{figure}[htb!]
-\centering%
-    \includegraphics[scale=0.45]{figures/client_poll.eps}
-    \caption{Twisted Event Loop}
-    \label{fig:Client Polling}
-\end{figure}
+\section {System Overview\\}
 
 \subsection{Design Goals and Rationale\\}
-
+The design of the PushUp server is driven by the following rationales.
 \begin{itemize}
-\item {\bf Scalability}  
-    As the long polling technologies requires the server to keep the polliing request active for a period of time,
-    large number of concurrent clients will generate lots of active connections. One of our goal is to minimize the 
-    cost of maintaining these active connections, which could in turn enhance the system's scalability.
+\item {\bf Large Concurrent Connections}:
+    As the long polling technologies requires the server to keep the polling
+    request active for a period of time, large number of concurrent clients 
+    will generate lots of active connections. One of the most goal of PushUp
+    is to minimize the cost of maintaining these active concurrent connections,
+    which can in turn enhance the system's scalability.
      
-    Scalability is the main issue in a Push model. Web servers usually create a thread per
-    client (connection). However, an HTTP based push will have an
-    outstanding request waiting on the server which will be used to send a response to the
-    client the instant an asynchronous event occurs. 
-    
-    However, for the http-based polling request, a large portion of the time will spent in waiting for new events, which
-    makes the traditonal multi-thread model inefficient. Better technologies are needed 
+    The key to reduce the cost is the event-based notification mechanism provided
+    by the operating systems. Unlike the multi-process or multi-threading concurrent
+    model, the event-based concurrency model requires much less resource to maintain
+    the connections.
+\item {\bf Transparency}: Although event-based concurrency significantly reduce the 
+    maintenance cost, it is impractical to have all the web server to be implemented
+    in event-based programming style. Rather, we hope the existing web servers can 
+    have the efficient long polling with minimal modification.
 
-\item {\bf Transparancy} TODO: many backend are implement in multi-thread model, so ... be able to have the long polling service with minimal effort (with little modification of the original service).
+    So when designing the PushUp server, much effort is made to ensure that 
+    the web servers and clients can work with minimal awareness of PushUp 
+    server's existence.
+\item {\bf Low latency}: Adding an intermediate layer in between of the 
+    clients and web servers will inevitably create some overhead. 
+    The PushUp server should not create too much extra costs.
 
-\item {\bf Low latency} TODO: overhead is inevitable, how to minimize it?
-
-\item {\bf Generality} TODO: can be used in many scenarios.
+\item {\bf Generality}: The PushUp Server is designed for general purposes. It is
+    not designed for a specific system for some specific purposes.
 
 \end{itemize}
 
