@@ -1,6 +1,19 @@
 \section {Evaluation\\}
 
-In this section, we conducted experiments to evaluate the performance of several different polling methods.
+In this section, we conducted experiments to evaluate the performance of 
+three web-based message delivery mechanisms. 
+
+\begin{itemize}
+    \item {\bf Client Pulling (CP): } In this model the client side initiates 
+        an http request to the server to pull the latest updates on a regular 
+        basis.
+    \item {\bf Multithreaded long polling(MLP): } This model achieves the 
+        long polling by multithreads. For each incoming polling request, the
+        server will create a thread waiting for the latest updates.
+    \item {\bf Event-based long polling(ELP): } This model achieves the long
+        polling by event-based mechanism(reactor model). This model keeps all
+        the polling requests within a single thread.
+\end{itemize}
 
 \subsection{Settings \\}
 
@@ -23,7 +36,7 @@ methods.
 \begin{itemize}
     \item {\bf Network Traffic (NT)}: NT evaluates the network usage for
         different event notification methods.
-    \item {\bf Mean Publish Trip time (MPT)}: The publish trip-time is 
+    \item {\bf Mean Publish Trip Time (MPT)}: The publish trip-time is 
         the time elapsed between the creation of a data by the server and 
         its reception by the client. It shows how long it takes for the 
         client to be updated when an event occurs.
@@ -36,9 +49,110 @@ methods.
 \end{itemize}
 
 \subsubsection{Evaluation Environment \\}
-The experiments are done in CMU's PEACE cluster. Each machine in the cluster has a 4 CPU cores(AMD Opteron Processor 4130, 2600 MHz, 512K cache size), 8 GB RAM and 1 physical 581 GB disk.
+The experiments are done in CMU's PEACE cluster. Each machine in the cluster 
+has a 4 CPU cores(AMD Opteron Processor 4130, 2600 MHz, 512K cache size),
+8 GB RAM and 1 physical 581 GB disk.
 
 \subsection{Push Model vs. Poll Model\\}
+
+One of the biggest advantage of long polling strategy is its significant 
+reduction of network traffic. In the following experiments we focused on
+the evaluation on the network traffic(NT) and mean publish trip time(MPT).
+
+Since the goal of these experiments is to characterize the network traffic 
+of different models. We evaluated the {\bf network traffic} and {\bf mean 
+publish trip time} only with some moderate {\bf number of concurrent 
+connections}: 10, 100 and 1000. 
+
+The {\bf publish time} are $10 sec$, $20 sec$, $30 sec$, $40 sec$ and 
+$50 sec$. The {\bf polling time} we chose for the {\bf client pulling}
+is $1 sec$, and $50 sec$ for long polling based models(which is a 
+popular choice in real world long polling applications).
+
+Table \ref{tb:traffic} shows the detailed network traffic with different 
+publish time and number of concurrent connections (written as "cc" 
+in the tables).  We can see that the long polling based model keeps 
+a relatively constant network traffic while the client pull model's 
+network traffic grows (almost) linearly as the publish time increases.
+Figure \ref{fig:traffic} shows the network traffic change when the number 
+of concurrent connection is $1000$.
+
+Table \ref{tb:mpt_all} demonstrates the mean publish trip time with 
+different publish time and number of concurrent connections. The MPT of
+client pull increases much faster than the long polling based models.
+This may because the increase of network traffic increase the chance
+of package loss in the client pull model. 
+Figure \ref{fig:traffic_latency} compares the MPT of push and pull models when 
+the number of concurrent connection is $1000$.
+
+In summary, the push model significantly reduce the network traffic, which in
+turn, yields a smaller mean publish trip time as the concurrent connections 
+increase. 
+
+Also, we observed that the multithread based long polling and event-based long 
+polling have similar performance in terms of network traffic and mean publish
+trip time when the number of concurrent connections is small. In the following
+evaluation we will test both model's performance with large concurrent 
+connections.
+
+\begin{table}
+\centering \caption{\label{tb:traffic} Network Traffic(KB)}
+\begin{tabular}{|l|l|l|l|l|l|}
+    \hline cc=10& 10 sec & 20 sec & 30 sec & 40 sec & 50 sec \\
+    \hline CP & 12.7 & 25.8 & 39.8 & 55.2 & 68.2 \\
+    \hline MLP & 1.27 & 1.27 & 1.27 & 1.27 & 1.27 \\
+    \hline ELP & 1.27 & 1.27 & 1.27 & 1.27 & 1.27 \\
+    \hline
+    \hline cc=100& 10 sec & 20 sec & 30 sec & 40 sec & 50 sec \\
+    \hline CP & 127.4 & 277.1 & 415.2 & 580.5 & 745.5 \\
+    \hline MLP & 12.7 & 12.7 & 12.7 & 12.7 & 13.1 \\
+    \hline ELP & 12.7 & 12.7 & 12.7 & 12.7 & 12.7 \\
+    \hline
+    \hline cc=1000 & 10 sec & 20 sec & 30 sec & 40 sec & 50 sec \\
+    \hline CP & 1370.5 & 3457.1 & 5537.5 & 7282.5 & 10743.5 \\
+    \hline MLP & 135.5 & 132.5 & 137.8 & 133.4 & 135.5 \\
+    \hline ELP & 130.1 & 129.5 & 132.8 & 131.8 & 130.5 \\
+    \hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[htb!]
+\centering%
+    \includegraphics[scale=0.60]{figures/io.eps}
+    \caption{Network Traffic of Pull \& Push Models}
+    \label{fig:traffic}
+\end{figure}
+
+
+\begin{table}
+\centering \caption{\label{tb:mpt_all} Mean Publish Trip Time (second)}
+\begin{tabular}{|l|l|l|l|l|l|}
+    \hline cc=10 & 10 sec & 20 sec & 30 sec & 40 sec & 50 sec \\
+    \hline CP & 0.6 & 0.7 & 0.5 & 0.7 & 0.8 \\
+    \hline MLP & 0.1 & 0.0 & 0.1 & 0.2 & 0.1 \\
+    \hline ELP & 0.2 & 0.1 & 0.1 & 0.4 & 0.2 \\
+    \hline
+    \hline cc=100 & 10 sec & 20 sec & 30 sec & 40 sec & 50 sec \\
+    \hline CP & 0.8 & 1.1 & 2.5 & 3.1 & 2.7 \\
+    \hline MLP & 0.5 & 0.4 & 0.5 & 0.8 & 1.2 \\
+    \hline ELP & 0.6 & 0.4 & 0.8 & 1.2 & 0.9 \\
+    \hline
+    \hline cc=1000& 10 sec & 20 sec & 30 sec & 40 sec & 50 sec \\
+    \hline CP & 0.5 & 3.4 & 4.5 & 5.3 & 7.2 \\
+    \hline MLP & 0.5 & 2.6 & 2.7 & 3.5 & 3.4 \\
+    \hline ELP & 0.8 & 2.8 & 1.8 & 2.4 & 2.9 \\
+    \hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[htb!]
+\centering%
+    \includegraphics[scale=0.60]{figures/latency.eps}
+    \caption{Mean Publish Trip Time of Pull \& Push Models}
+    \label{fig:traffic_latency}
+\end{figure}
+
+\subsection{Event vs. Thread\\}
 
 * Design goal: Comparison between different models, what are the expected experimental results.
 
@@ -48,101 +162,25 @@ The experiments are done in CMU's PEACE cluster. Each machine in the cluster has
 
 * Experiment analysis: What can you see from the experiment results? Does it match your expectation?
 
-One of the biggest advantage of long polling is the significant reduction of frequently client polls.
 
-In this section, we will conduct experiments to figure the network traffic incurred by three different strategies:
+How they can serve large amount of active connection.
 
-\subsection{Event vs. Thread\\}
+Metrics:
 
+Up to 20000 connections.
 
 \subsection{Extending PushUp Server}
 
+HAProxy, very simple load balancing.
 
-\begin{itemize}
-    \item {\bf client polling (CP): } Client will initiate an http request to the server polling for the latest updates on a regular basis (in the experiments we set the polling frequency to be 1 second).
-    \item {\bf multithreading long polling(MLP): } Long polling based on multi threads. The server will created a thread for each incoming long polling request.
-    \item {\bf event-based long polling(ELP): }Long polling based on event-based notification.
-\end{itemize}
+1, 2, 3, 4, 5
 
-\begin{table}
-\centering \caption{\label{tb:traffic} Network IO(Active Connection=10)}
-\begin{tabular}{|l|l|l|l|l|l|}
-    \hline  & 10 sec & 20 sec & 30 sec & 40 sec & 50 sec \\
-    \hline CP & 12.7K & 25.8K & 39.8K & 55.2K & 68.2K \\
-    \hline MLP & 1.27K & 1.27K & 1.27K & 1.27K & 1.27K \\
-    \hline ELP & 1.27K & 1.27K & 1.27K & 1.27K & 1.27K \\
-    \hline
-\end{tabular}
-\end{table}
+The Load balance create a little overhead (how much?).
 
-\begin{table}
-\centering \caption{\label{tb:traffic} Network IO(Active Connection=100)}
-\begin{tabular}{|l|l|l|l|l|l|}
-    \hline      & 10 sec & 20 sec & 30 sec & 40 sec & 50 sec \\
-    \hline CP & 127.4K & 277.1K & 415.2K & 580.5K & 745.5K \\
-    \hline MLP & 12.7K & 12.7K & 12.7K & 12.7K & 13.1K \\
-    \hline ELP & 12.7K & 12.7K & 12.7K & 12.7K & 12.7K \\
-    \hline
-\end{tabular}
-\end{table}
+But overall the overhead is acceptable.
 
-\begin{table}
-\centering \caption{\label{tb:traffic} Network IO(Active Connection=1000)}
-\begin{tabular}{|l|l|l|l|l|l|}
-    \hline & 10 sec & 20 sec & 30 sec & 40 sec & 50 sec \\
-    \hline CP & 1370.5K & 3457.1K & 5537.5K & 7282.5K & 10743.5K \\
-    \hline MLP & 135.5K & 132.5K & 137.8K & 133.4K & 135.5K \\
-    \hline ELP & 130.1K & 129.5K & 132.8K & 131.8K & 130.5K \\
-    \hline
-\end{tabular}
-\end{table}
 
-\begin{table}
-\centering \caption{\label{tb:traffic} Network IO(Active Connection=1000)}
-\begin{tabular}{|l|l|l|l|l|l|}
-    \hline & 10 sec & 20 sec & 30 sec & 40 sec & 50 sec \\
-    \hline CP & 0.6 sec & 0.7 sec & 0.5 sec & 0.7 sec & 0.8 sec \\
-    \hline MLP & 0.1 sec & 0.0 sec & 0.1 sec & 0.2 sec & 0.1 sec \\
-    \hline ELP & 0.2 sec & 0.1 sec & 0.1 sec & 0.4 sec & 0.2 sec \\
-    \hline
-\end{tabular}
-\end{table}
 
-\begin{table}
-\centering \caption{\label{tb:traffic} Network IO(Active Connection=1000)}
-\begin{tabular}{|l|l|l|l|l|l|}
-    \hline & 10 sec & 20 sec & 30 sec & 40 sec & 50 sec \\
-    \hline CP & 0.8 sec & 1.1 sec & 2.5 sec & 3.1 sec & 2.7 sec \\
-    \hline MLP & 0.5 sec & 0.4 sec & 0.5 sec & 0.8 sec & 1.2 sec \\
-    \hline ELP & 0.6 sec & 0.4 sec & 0.8 sec & 1.2 sec & 0.9 sec \\
-    \hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-\centering \caption{\label{tb:traffic} Network IO(Active Connection=1000)}
-\begin{tabular}{|l|l|l|l|l|l|}
-    \hline  & 10 sec & 20 sec & 30 sec & 40 sec & 50 sec \\
-    \hline CP & 0.5 sec & 3.4 sec & 4.5 sec & 5.3 sec & 7.2 sec \\
-    \hline MLP & 0.5 sec & 2.6 sec & 2.7 sec & 3.5 sec & 3.4 sec \\
-    \hline ELP & 0.8 sec & 2.8 sec & 1.8 sec & 2.4 sec & 2.9 sec \\
-    \hline
-\end{tabular}
-\end{table}
-
-\begin{figure}[htb!]
-\centering%
-    \includegraphics[scale=0.60]{figures/io.eps}
-    \caption{Network traffic}
-    \label{fig:traffic_io}
-\end{figure}
-
-\begin{figure}[htb!]
-\centering%
-    \includegraphics[scale=0.60]{figures/latency.eps}
-    \caption{Latency}
-    \label{fig:traffic_latency}
-\end{figure}
 
 \begin{figure}[htb!]
 \centering%
