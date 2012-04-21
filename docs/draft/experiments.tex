@@ -154,6 +154,46 @@ connections.
 
 \subsection{Event vs. Thread\\}
 
+Here we compared the performance between event-based long polling model
+and the multithreading long polling model. In the following evaluation
+we tested the {server memory usage(SMU)}, {\bf mean publish trip time
+(MPT)}, {\bf received message percentage(RMP)} with large number of
+active connections(from 500-16000).
+
+Figure \ref{fig:et_memory} shows the server memory usage of both models.
+The event-based model demonstrates an excellent memory usage as the
+number of active connections increases, while the memory usage of 
+multithreading model soars rapidly and reaches $100\%$ when the active
+connections' number goes to $8000$.
+
+Figure \ref{fig:et_latency} and figure \ref{fig:et_rate}, show the mean
+publish trip time and received message percentage. Event-based model 
+significantly excels multithreading model in both evaluation.
+
+\begin{figure}[htb!]
+\centering%
+    \includegraphics[scale=0.70]{figures/et_memory.eps}
+    \caption{Server Memory Usage}
+    \label{fig:et_memory}
+\end{figure}
+
+\begin{figure}[htb!]
+\centering%
+    \includegraphics[scale=0.70]{figures/et_latency.eps}
+    \caption{Mean Publish Trip Time}
+    \label{fig:et_latency}
+\end{figure}
+
+\begin{figure}[htb!]
+\centering%
+    \includegraphics[scale=0.70]{figures/et_rate.eps}
+    \caption{Received Message Percentage}
+    \label{fig:et_rate}
+\end{figure}
+
+
+\subsection{Extending PushUp Server}
+
 * Design goal: Comparison between different models, what are the expected experimental results.
 
 * How do you conduct the experiment?
@@ -169,8 +209,6 @@ Metrics:
 
 Up to 20000 connections.
 
-\subsection{Extending PushUp Server}
-
 HAProxy, very simple load balancing.
 
 1, 2, 3, 4, 5
@@ -181,20 +219,6 @@ But overall the overhead is acceptable.
 
 
 
-
-\begin{figure}[htb!]
-\centering%
-    \includegraphics[scale=0.60]{figures/memory.eps}
-    \caption{Comparison of the Memory Usage between Event-based and multithreading strategies}
-    \label{fig:memory}
-\end{figure}
-
-\begin{figure}[htb!]
-\centering%
-    \includegraphics[scale=0.60]{figures/event_thread_latency.eps}
-    \caption{Request Latency}
-    \label{fig:memory}
-\end{figure}
 
 \subsection{Measuring the Active Connections\\}
 
