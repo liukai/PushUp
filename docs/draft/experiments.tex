@@ -1,5 +1,5 @@
 \section {Evaluation\\}
-
+ 
 In this section, we conducted experiments to evaluate the performance of 
 three web-based message delivery mechanisms. 
 
@@ -120,7 +120,7 @@ concurrent connections.
 
 \begin{figure}[htb!]
 \centering%
-    \includegraphics[scale=0.60]{figures/io.eps}
+    \includegraphics[scale=0.70]{figures/io.eps}
     \caption{Network Traffic of Pull \& Push Models}
     \label{fig:traffic}
 \end{figure}
@@ -149,7 +149,7 @@ concurrent connections.
 
 \begin{figure}[htb!]
 \centering%
-    \includegraphics[scale=0.60]{figures/latency.eps}
+    \includegraphics[scale=0.70]{figures/latency.eps}
     \caption{Mean Publish Trip Time of Pull \& Push Models}
     \label{fig:traffic_latency}
 \end{figure}
@@ -158,7 +158,7 @@ concurrent connections.
 
 Here we compared the performance between event-based long polling model
 and the multithreading long polling model. In the following evaluation
-we tested the {server memory usage(SMU)}, {\bf mean publish trip time
+we tested the {\bf server memory usage(SMU)}, {\bf mean publish trip time
 (MPT)}, {\bf received message percentage(RMP)} with large number of
 active connections(from 500-16000).
 
@@ -202,6 +202,19 @@ number of concurrent connections increases.
 
 \subsection{Extending PushUp Server\\}
 
+\begin{figure}[htb!]
+\centering%
+    \includegraphics[scale=0.30]{figures/multinode_latency.eps}
+    \caption{Mean Publish Trip Time}
+    \label{fig:et_memory}
+\end{figure}
+
+\begin{figure}[htb!]
+\centering%
+    \includegraphics[scale=0.30]{figures/multinode_rate.eps}
+    \caption{Received Message Percentage}
+    \label{fig:et_latency}
+\end{figure}
 * Design goal: Comparison between different models, what are the expected experimental results.
 
 * How do you conduct the experiment?
