@@ -1,13 +1,16 @@
 \section{Summary and Concusion\\}
 
 In this paper we examined an event-based scalable long polling server PushUp.
-As a dedicated long polling server, the aims of the PushUp is to be efficiently
+As a dedicated long polling server, the aim of the PushUp is to be efficiently
 handle large number of concurrent connections and provides general long 
 polling services for different backend web servers.
 
 We compared the PushUp server's performance with other event notification 
-models.  The experimental results showed that PushUp server works very 
-well in reducing the netowrk traffic, memroy usage, latency, etc. To 
-promote the scalablity one PushUp Server, we also extened the single 
-machine to several machine.
+models. The experimental results demonstrate that excellent capability of 
+PushUp server in terms of significantly reduced network traffic, lower memory 
+usage, slowly growing latency (as the number of concurrent connections gets 
+larger), etc. To further evaluate the scalability the PushUp Server, we also
+tested the performance of several collaborative PushUp servers, whose 
+experimental results shows that PushUp servers scale well as the numbers of
+server increases.
 
