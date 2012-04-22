@@ -10,24 +10,27 @@ The design of the PushUp server is driven by the following rationales.
     is to minimize the cost of maintaining these active concurrent connections,
     which can in turn enhance the system's scalability.
      
-    The key to reduce the cost is the event-based notification mechanism provided
-    by the operating systems. Unlike the multi-process or multi-threading concurrent
-    model, the event-based concurrency model requires much less resource to maintain
-    the connections.
-\item {\bf Transparency}: Although event-based concurrency significantly reduce the 
-    maintenance cost, it is impractical to have all the web server to be implemented
-    in event-based programming style. Rather, we hope the existing web servers can 
-    have the efficient long polling with minimal modification.
+    The key to reduce the cost is the event-based notification mechanism 
+    provided by the operating systems. Unlike the multi-process or 
+    multithreading concurrent model, the event-based concurrency model 
+    requires much less resource to maintain the connections.
 
-    So when designing the PushUp server, much effort is made to ensure that 
-    the web servers and clients can work with minimal awareness of PushUp 
-    server's existence.
-\item {\bf Low latency}: Adding an intermediate layer in between of the 
+\item {\bf Transparency}: Although event-based concurrency significantly 
+    reduce the maintenance cost, it is impractical to have all the web 
+    server to be implemented in event-based programming style. Thus, the 
+    PushUp server provides the dedicated event-based long polling services
+    for all underlying web servers. We hope the introduction of PushUp server
+    requires minimal modification on the web servers and hides its existence
+    from the clients.
+
+\item {\bf Low Latency}: Adding an intermediate layer in between of the 
     clients and web servers will inevitably create some overhead. 
-    The PushUp server should not create too much extra costs.
+    The PushUp server should make sure that the extra costs should be within
+    an ``acceptable" range.
 
-\item {\bf Generality}: The PushUp Server is designed for general purposes. It is
-    not designed for a specific system for some specific purposes.
+\item {\bf Scalability}: The PushUp Server is designed to handle large number of
+    active connections. We introduces mechanisms to make PushUp more able to
+    handle this problem. 
 
 \end{itemize}
 

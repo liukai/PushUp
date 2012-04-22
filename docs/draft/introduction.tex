@@ -1,24 +1,25 @@
 \section {Introduction\\}
 Traditionally, the web server is a classical example of the request/response 
-model, where the clients can retrieve the resource from the server, but the 
+model, where the clients can retrieve the resource from the server but the 
 server cannot push the data to the client actively. 
 
 However, with the increasing popularity of Ajax\cite{Ajax} technologies, there 
 are many scenarios where servers would like to actively notify the clients the 
-latest events. For example, the chat room, twitter timeline, stock ticker, etc.
+latest updates. For example, the new messages in chat room, latest tweets in 
+twitter, etc.
 
 To overcome the limitation of request/response model, many approaches has been 
-proposed to build a more responsive site:
+proposed to build more responsive sites. For example:
 
 \begin{itemize}
-\item Client Pull: the client pull approach is very easy to implement because 
+\item Client Pull: the client sends update requests periodically to pull the
+updates from server. This method is very easy to implement because 
 it is stateless and the web server doesn't need to put much effort to modify 
-its architecture. However, this approach will generate lots of http requests.
-The work flow of client pull is illustrated in Figure
-\ref{fig:client_pull}.
+its architecture. However, client pull will generate lots of http requests.
+The work flow of client pull is illustrated in Figure \ref{fig:client_pull}.
 
 \item Plugins: since the HTTP itself doesn't provide any mechanism for server 
-push, plugins, such as the Flash, SilverLight, Javelet, etc, can be used as an 
+push, plugins, such as the Flash, Silverlight, Javelet, etc, can be used as an 
 extension of the HTTP by providing more flexible client/server communication 
 mechanisms. However plugins is non-standard and requires users' extra effort to 
 install and configure them.
@@ -26,13 +27,16 @@ install and configure them.
 
 Given those drawbacks, we focus on the another solution: long polling
 \cite{LongPolling}. The work flow of long polling can be described in Figure
-\ref{fig:long_polling}. When a client ``asks for"(polls) an event by sending an
-HTTP request to the server. If the new events are not yet available, the server 
-will not terminate the connection immediately; Instead, the server will keep 
-the connection open for a period of time until (1) a new event arrives or 
-(2) the request expired.
+\ref{fig:long_polling}. When a client ``asks for"(polls) an update by sending 
+an HTTP request to the server, if the no information is yet available, the 
+server will not terminate the connection immediately; Instead, the server 
+will keep the connection open for a period of time until (1) the information 
+become available (2) after a suitable timeout($50$ seconds is a common choice).
 
-The benefit to long-polling is that there is less back-and-forth between the client and server. The server is in control of the timing, so updates to the browser can be made within milliseconds. This makes it ideal for some highly interactive web applications.
+The benefit to long-polling is that there is less back-and-forth between the 
+client and server. The server is in control of the timing, so updates to the
+browser can be made within milliseconds. This makes it ideal for some highly
+interactive web applications.
 
 \begin{figure}[htb!]
 \centering
@@ -40,6 +44,7 @@ The benefit to long-polling is that there is less back-and-forth between the cli
     \caption{Client Pull Work Flow}
     \label{fig:client_pull}
 \end{figure}
+
 \begin{figure}[htb!]
     \includegraphics[scale=0.70]{figures/long_polling.eps}
     \caption{Long Polling Work Flow}
@@ -51,8 +56,9 @@ number of active connections between the clients and the servers. For example,
 if you have one million users and, 10\% of them will be online. In this case,
 the server should be able to hold at least 100,000 concurrent connections.
 
-To address these problems, we present the event-based\cite{UnixBook}  long polling 
-server PushUp that can provide long polling service with less resource cost.
+To address these problems, we present the event-based\cite{UnixBook}, scalable
+long polling server PushUp to provide dedicated long polling services for 
+different web applications with less resource cost.
 
 As illustrated in Figure \ref{fig:sim_pushup}, the PushUp server lies in 
 between of clients and web servers. It has two main responsibilities:
@@ -64,18 +70,17 @@ between of clients and web servers. It has two main responsibilities:
 \end{figure}
 
 \begin {itemize}
+\item {\bf An event-based message queue}\cite{PubSub} to provide the long 
+polling services. It keeps the active connections with very low overhead.
+The core to this component is an event-based message queue provides
+publication interface for the web servers and the subscription interface
+for the clients.
 \item {\bf An event-based reverse proxy}\cite{ReverseProxy} that retrieves 
-resources on behalf of a client from one or more servers. We will cover
-more on the details of reverse proxy in the following sections.
-% When there are many 
-% requests coming to the web server, the server needs to create many parallel 
-% threads/processes and keep them running while client will close connection. 
-% If client has slow connection, web server process will wait too long and 
-% resource consumption will increase very fast. The reverse proxy can hide 
-% the existence of the backend web server and 
-% proxy can effectively solve the problem since 
-\item {\bf A dedicated event-based message queue}\cite{PubSub} that can keep active 
-connections with very low overhead. This message queue provides publication
-interface for the web servers and the subscription interface for the clients.
+resources on behalf of a client from one or more servers.
 \end {itemize}
 
+The message queue and reverse proxy of PushUp server forms an intermediary
+between browsers and web servers. When a client request arrives the PushUp
+will forward non-update-polling to the backend web servers and the long 
+polling requests to the message queues. Doing this allows both clients and
+web servers work with minimal awareness of PushUp Server. 
