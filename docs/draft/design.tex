@@ -20,9 +20,13 @@ handlers as events occur, etc.
 
 Figure \ref{fig:eventloop} demonstrates the how the execution switches
 between the event loops and user code. Figure \ref{fig:eventloop_flow} 
-further illustrates the detailed work flow with sequence diagram. As
-we can see from these figures, the execution event handler should 
-not take a long time otherwise the whole system will be blocked.
+further illustrates the detailed work flow with sequence diagram.
+
+As we can see from these figures, one of the caveat of in 
+event-based programming is that each event handler should 
+be carefully design in order to make sure its execution 
+will not take a long time; otherwise the whole system will 
+be blocked.
 
 \begin{figure}[htb!]
     \centering%

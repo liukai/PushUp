@@ -1,17 +1,24 @@
 \section {Evaluation\\}
  
 In this section, we conducted experiments to evaluate the performance of 
-three web-based message delivery mechanisms. 
+several web-based event\footnote{the term ``event" here refers to the ``latest 
+updates in the server side", which differs from the meaning in ``event-based"
+} notification mechanisms. We also evaluated PushUp servers' performance with
+different server numbers.
+
+To better characterize the performance of the PushUp server, we chose ``Client
+Pulling" and ``Multithreadeding long polling" as the baseline. The PushUp
+adopted the Event-based long polling mechanism.
 
 \begin{itemize}
-    \item {\bf Client Pulling (CP): } In this model the client side initiates 
+    \item {\bf Client Pulling (CP): } In this method the client side initiates 
         an http request to the server to pull the latest updates on a regular 
         basis.
-    \item {\bf Multithreadeding long polling(MLP): } This model realizes the 
+    \item {\bf Multithreadeding long polling(MLP): } This method realizes the 
         long polling by multi threads. For each incoming polling request, the
         server will create a thread waiting for the latest updates.
-    \item {\bf Event-based long polling(ELP): } This model realizes the long
-        polling by event-based mechanism. This model keeps all the polling 
+    \item {\bf Event-based long polling(ELP): } This method realizes the long
+        polling by event-based mechanism. This method keeps all the polling 
         requests within a single thread.
 \end{itemize}
 
@@ -62,28 +69,28 @@ reduction of network traffic. In the following experiments we focused on
 the evaluation on the network traffic(NT) and mean publish trip time(MPT).
 
 Since the goal of these experiments is to characterize the network traffic 
-of different models. We evaluated the {\bf network traffic} and {\bf mean 
+of different methods. We evaluated the {\bf network traffic} and {\bf mean 
 publish trip time} only with some moderate number of concurrent 
 connections: 10, 100 and 1000. 
 
 The {\bf publish time} are $10 sec$, $20 sec$, $30 sec$, $40 sec$ and 
 $50 sec$. The {\bf polling time} we chose for the {\bf client pulling}
-is $1 sec$, and $50 sec$ for long polling based models(which is a 
+is $1 sec$, and $50 sec$ for long polling based methods(which is a 
 popular choice in real world long polling applications).
 
 Table \ref{tb:traffic} shows the detailed network traffic with different 
 publish time and number of concurrent connections (written as "cc" 
-in the tables).  We can see that the long polling based model keeps 
-a relatively constant network traffic while the client pull model's 
+in the tables).  We can see that the long polling based method keeps 
+a relatively constant network traffic while the client pull method's 
 network traffic grows (almost) linearly as the publish time increases.
 Figure \ref{fig:traffic} shows the network traffic change when the number 
 of concurrent connection is $1000$.
 
 Table \ref{tb:mpt_all} demonstrates the mean publish trip time with 
 different publish time and number of concurrent connections. The MPT of
-client pull increases much faster than the long polling based models.
+client pull increases much faster than the long polling based methods.
 This may because the growing network traffic increases the chance
-of package loss in the client pull model. 
+of package loss in the client pull method. 
 Figure \ref{fig:traffic_latency} compares the MPT of push and pull models when 
 the number of concurrent connection is $1000$.
 
@@ -94,7 +101,7 @@ increase.
 Also, we observed that the multithreading-based long polling and event-based long 
 polling have similar performance in terms of network traffic and mean publish
 trip time when the number of concurrent connections is relatively small. In the 
-following next we will test both long polling models' performance with large 
+next evaluation we will test both long polling methods' performance with large 
 concurrent connections.
 
 \begin{table}
@@ -156,27 +163,27 @@ concurrent connections.
 
 \subsection{Event vs. Thread\\}
 
-Here we compared the performance between event-based long polling model
-and the multithreading long polling model. In the following evaluation
+Here we compared the performance between event-based long polling method
+and the multithreading long polling method. In the following evaluation
 we tested the {\bf server memory usage(SMU)}, {\bf mean publish trip time
 (MPT)}, {\bf received message percentage(RMP)} with large number of
 active connections(from 500-16000).
 
-Figure \ref{fig:et_memory} shows the server memory usage of both models.
-The event-based model demonstrates an excellent memory usage as the
+Figure \ref{fig:et_memory} shows the server memory usage of both methods.
+The event-based method demonstrates an excellent memory usage as the
 number of active connections increases, while the memory usage of 
-multithreading model soars rapidly and reaches $100\%$ when the active
+multithreading method soars rapidly and reaches $100\%$ when the active
 connections' number goes to $8000$.
 
 Figure \ref{fig:et_latency} and figure \ref{fig:et_rate}, show the mean
-publish trip time and received message percentage. Event-based model 
-significantly excels multithreading model in both evaluation.
+publish trip time and received message percentage. Event-based method 
+significantly excels multithreading method in both evaluation.
 
-Thus we claimed multithreading approach is not a good choice as its
-memory usage and possible context switch may incur very large overhead,
-which heavily lowered the system performance. The event-based mode, on
-the other hand, demonstrates a slower performance decrease as the
-number of concurrent connections increases.
+Thus we claimed one-polling-request-per-thread approach is not a good 
+choice for handling large amount of concurrent connections, as its
+memory usage and possible context switch may incur very large overhead.
+The event-based method, on the other hand, demonstrates a better 
+performance in memory usage and hosting large concurrency.  
 
 \begin{figure}[htb!]
 \centering%
@@ -206,40 +213,30 @@ number of concurrent connections increases.
 \centering%
     \includegraphics[scale=0.30]{figures/multinode_latency.eps}
     \caption{Mean Publish Trip Time}
-    \label{fig:et_memory}
+    \label{fig:mt_latency}
 \end{figure}
 
 \begin{figure}[htb!]
 \centering%
     \includegraphics[scale=0.30]{figures/multinode_rate.eps}
     \caption{Received Message Percentage}
-    \label{fig:et_latency}
+    \label{fig:mt_rate}
 \end{figure}
-* Design goal: Comparison between different models, what are the expected experimental results.
 
-* How do you conduct the experiment?
+As we saw the advantages of PushUp over other event notificaition methods, 
+now we would like to extend one PushUp server to $2$,  $3$ and $4$ servers
+and see the performance changes as PushUp scales.
 
-* What is the exp results?
+In this evaluation, the incoming polling requests will be (almost) evenly 
+distributed to each PushUp server. A simple round-robin will be sufficient 
+for this task. We used the HAProxy\cite{HAProxy} as a load balancer, which
+simply balances the load in the TCP layer.
 
-* Experiment analysis: What can you see from the experiment results? Does it match your expectation?
+Figure \ref{fig:mt_latency} and figure \ref{fig:mt_rate}, respectively, show
+the {\bf mean publish trip time} and {\bf received message rate} of the 
+PushUp servers with different nodes.
 
-
-How they can serve large amount of active connection.
-
-Metrics:
-
-Up to 20000 connections.
-
-HAProxy, very simple load balancing.
-
-1, 2, 3, 4, 5
-
-The Load balance create a little overhead (how much?).
-
-But overall the overhead is acceptable.
-
-
-
-
-\subsection{Measuring the Active Connections\\}
+These figures verify that the PushUp servers scale almost linearly as the 
+number of nodes increases, with a very small overhead in load balancing 
+and updates propagation among PushUp servers.
 
