@@ -56,7 +56,7 @@ number of active connections between the clients and the servers. For example,
 if you have one million users and, 10\% of them will be online. In this case,
 the server should be able to hold at least 100,000 concurrent connections.
 
-To address these problems, we present the event-based\cite{UnixBook}, scalable
+To address these problems, we present the event-driven\cite{UnixBook}, scalable
 long polling server PushUp to provide dedicated long polling services for 
 different web applications with less resource cost.
 
@@ -70,12 +70,12 @@ between of clients and web servers. It has two main responsibilities:
 \end{figure}
 
 \begin {itemize}
-\item {\bf An event-based message queue}\cite{PubSub} to provide the long 
+\item {\bf An event-driven message queue}\cite{PubSub} to provide the long 
 polling services. It keeps the active connections with very low overhead.
-The core to this component is an event-based message queue provides
+The core to this component is an event-driven message queue provides
 publication interface for the web servers and the subscription interface
 for the clients.
-\item {\bf An event-based reverse proxy}\cite{ReverseProxy} that retrieves 
+\item {\bf An event-driven reverse proxy}\cite{ReverseProxy} that retrieves 
 resources on behalf of a client from one or more servers.
 \end {itemize}
 

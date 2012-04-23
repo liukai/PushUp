@@ -2,13 +2,13 @@
  
 In this section, we conducted experiments to evaluate the performance of 
 several web-based event\footnote{the term ``event" here refers to the ``latest 
-updates in the server side", which differs from the meaning in ``event-based"
+updates in the server side", which differs from the meaning in ``event-driven"
 } notification mechanisms. We also evaluated PushUp servers' performance with
 different server numbers.
 
 To better characterize the performance of the PushUp server, we chose ``Client
 Pulling" and ``Multithreadeding long polling" as the baseline. The PushUp
-adopted the Event-based long polling mechanism.
+adopted the Event-driven long polling mechanism.
 
 \begin{itemize}
     \item {\bf Client Pulling (CP): } In this method the client side initiates 
@@ -17,8 +17,8 @@ adopted the Event-based long polling mechanism.
     \item {\bf Multithreadeding long polling(MLP): } This method realizes the 
         long polling by multi threads. For each incoming polling request, the
         server will create a thread waiting for the latest updates.
-    \item {\bf Event-based long polling(ELP): } This method realizes the long
-        polling by event-based mechanism. This method keeps all the polling 
+    \item {\bf Event-driven long polling(ELP): } This method realizes the long
+        polling by event-driven mechanism. This method keeps all the polling 
         requests within a single thread.
 \end{itemize}
 
@@ -98,7 +98,7 @@ In summary, the push model significantly reduce the network traffic, which in
 turn, yields a smaller mean publish trip time as the concurrent connections 
 increase. 
 
-Also, we observed that the multithreading-based long polling and event-based long 
+Also, we observed that the multithreading-based long polling and event-driven long 
 polling have similar performance in terms of network traffic and mean publish
 trip time when the number of concurrent connections is relatively small. In the 
 next evaluation we will test both long polling methods' performance with large 
@@ -163,26 +163,26 @@ concurrent connections.
 
 \subsection{Event vs. Thread\\}
 
-Here we compared the performance between event-based long polling method
+Here we compared the performance between event-driven long polling method
 and the multithreading long polling method. In the following evaluation
 we tested the {\bf server memory usage(SMU)}, {\bf mean publish trip time
 (MPT)}, {\bf received message percentage(RMP)} with large number of
 active connections(from 500-16000).
 
 Figure \ref{fig:et_memory} shows the server memory usage of both methods.
-The event-based method demonstrates an excellent memory usage as the
+The event-driven method demonstrates an excellent memory usage as the
 number of active connections increases, while the memory usage of 
 multithreading method soars rapidly and reaches $100\%$ when the active
 connections' number goes to $8000$.
 
 Figure \ref{fig:et_latency} and figure \ref{fig:et_rate}, show the mean
-publish trip time and received message percentage. Event-based method 
+publish trip time and received message percentage. Event-driven method 
 significantly excels multithreading method in both evaluation.
 
 Thus we claimed one-polling-request-per-thread approach is not a good 
 choice for handling large amount of concurrent connections, as its
 memory usage and possible context switch may incur very large overhead.
-The event-based method, on the other hand, demonstrates a better 
+The event-driven method, on the other hand, demonstrates a better 
 performance in memory usage and hosting large concurrency.  
 
 \begin{figure}[htb!]

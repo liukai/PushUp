@@ -10,15 +10,15 @@ The design of the PushUp server is driven by the following rationales.
     is to minimize the cost of maintaining these active concurrent connections,
     which can in turn enhance the system's scalability.
      
-    The key to reduce the cost is the event-based notification mechanism 
+    The key to reduce the cost is the event-driven notification mechanism 
     provided by the operating systems. Unlike the multi-process or 
-    multithreading concurrent model, the event-based concurrency model 
+    multithreading concurrent model, the event-driven concurrency model 
     requires much less resource to maintain the connections.
 
-\item {\bf Transparency}: Although event-based concurrency significantly 
+\item {\bf Transparency}: Although event-driven concurrency significantly 
     reduce the maintenance cost, it is impractical to have all the web 
-    server to be implemented in event-based programming style. Thus, the 
-    PushUp server provides the dedicated event-based long polling services
+    server to be implemented in event-driven programming style. Thus, the 
+    PushUp server provides the dedicated event-driven long polling services
     for all underlying web servers. We hope the introduction of PushUp server
     requires minimal modification on the web servers and hides its existence
     from the clients.
