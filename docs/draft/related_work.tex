@@ -3,10 +3,10 @@
 \subsection{Event-driven Systems\\}
 
 The paper\cite{David} evaluated several strategies to achieve concurrency
-for web servers. The authors compared performance of multi-process, multi-thread, 
-event-driven, etc. for the concurrency implementation. As the experimental 
-results reveal, the event-driven $\mu$-server performed better than multithreading
-or multiprocessing models.
+for web servers. The authors compared performance of different concurrent models:
+multi-process, multi-thread, event-driven, etc.  As the experimental 
+results reveal, the event-driven $\mu$-server performed better than 
+multithreading or multiprocessing models
     
 In the famous technical report\cite{C10K}, Kegel performed detailed
 benchmark on several I/O strategies. The report compares different 
@@ -18,10 +18,10 @@ they avoid active pollings to the system kernels.
 
 \subsection{Server Push technologies\\}
 
-In \cite{Engin}, Bozdag \emph{et al} provided a complete comparison 
-and evaluation of different server push technologies, including the 
-HTTP pull, Flash XML socket, Java RMI, etc. As a conclusion the authors 
-stated that "an event-driven model on the server side is necessary" 
+In \cite{Engin}, Bozdag \emph{et al} provided complete comparisons 
+and evaluation of different types of server push technologies, including the 
+HTTP pull, Flash XML socket, Java RMI, long polling etc. As a conclusion the
+authors stated that "an event-driven model on the server side is necessary" 
 owing to its , lower consumption of the computing resource, less network
 traffic etc.
 

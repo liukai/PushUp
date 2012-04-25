@@ -1,7 +1,7 @@
 \section {Introduction\\}
 Traditionally, the web server is a classical example of the request/response 
 model, where the clients can retrieve the resource from the server but the 
-server cannot push the data to the client actively. 
+server cannot push the data to the client directly. 
 
 However, with the increasing popularity of Ajax\cite{Ajax} technologies, there 
 are many scenarios where servers would like to actively notify the clients the 
@@ -15,7 +15,7 @@ proposed to build more responsive sites. For example:
 \item Client Pull: the client sends update requests periodically to pull the
 updates from server. This method is very easy to implement because 
 it is stateless and the web server doesn't need to put much effort to modify 
-its architecture. However, client pull will generate lots of http requests.
+its existing architecture. However, client pull will generate lots of http requests.
 The work flow of client pull is illustrated in Figure \ref{fig:client_pull}.
 
 \item Plugins: since the HTTP itself doesn't provide any mechanism for server 
@@ -25,18 +25,19 @@ mechanisms. However plugins is non-standard and requires users' extra effort to
 install and configure them.
 \end{itemize}
 
-Given those drawbacks, we focus on the another solution: long polling
+Given those drawbacks, we consider another solution: long polling
 \cite{LongPolling}. The work flow of long polling can be described in Figure
 \ref{fig:long_polling}. When a client ``asks for"(polls) an update by sending 
-an HTTP request to the server, if the no information is yet available, the 
+an HTTP request to the server, if no information is yet available, the 
 server will not terminate the connection immediately; Instead, the server 
 will keep the connection open for a period of time until (1) the information 
-become available (2) after a suitable timeout($50$ seconds is a common choice).
+become available (2) after a suitable timeout($50$ seconds is a common choice
+in many commercial websites).
 
 The benefit to long-polling is that there is less back-and-forth between the 
 client and server. The server is in control of the timing, so updates to the
-browser can be made within milliseconds. This makes it ideal for some highly
-interactive web applications.
+browser can normally be made within milliseconds. This makes it ideal for 
+some highly interactive web applications.
 
 \begin{figure}[htb!]
 \centering
@@ -52,8 +53,8 @@ interactive web applications.
 \end{figure}
 
 The down-side of long polling is that the server may have to deal with large
-number of active connections between the clients and the servers. For example,
-if you have one million users and, 10\% of them will be online. In this case,
+amount of active connections between the clients and the servers. For example,
+suppose a website has one million users and, 10\% of them will be online. In this case,
 the server should be able to hold at least 100,000 concurrent connections.
 
 To address these problems, we present the event-driven\cite{UnixBook}, scalable
@@ -65,9 +66,9 @@ as a dedicated long polling server, introduces an intermediary between
 the clients and web servers. Inside the PushUp server there is a specialized 
 event-driven message queue that:
 \begin {itemize}
-    \item[1] Keeps the active connections with very low overhead.
+    \item[1] Keeps the active connections with low overhead.
     \item[2] Provides a familiar interface for clients to listen to the latest 
-             updates and the web servers notifies the newest changes.
+             updates and the web servers to notify the newest changes.
 \end {itemize}
 
 

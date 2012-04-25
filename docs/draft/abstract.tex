@@ -1,22 +1,20 @@
 \begin{abstract} 
 
- The long-polling is a server push technology that makes the delivery the 
- latest updates from server to client more ``instant".
-
-With long polling, when a client requests updates from the server, the server
-will hold the request if there is no available update yet. The server sends
-the complete response to the server only when the information becomes available
-or after a suitable timeout.
+The ``long-polling" is a server push technology that makes the delivery the 
+latest updates from server to client more ``instant". With long polling, 
+when a client requests updates from the server, the server
+will keep the request connection open if there is no available update yet. 
+The server sends the complete response to the server only when the interested
+information becomes available or after a suitable timeout.
 
 However this solution may require the server to hold large number of open 
-connections for on the server side. To efficiently manage these connections
+connections for in the server side. To efficiently manage these connections
 and reduce the complexity of web development, we proposed an event-driven, 
 dedicated long-polling server to provide efficient and scalable long polling
-services for the underlying web servers. We compared the event-driven long
-polling method with several other server-side event notification methods with
-evaluations of different aspects. We demonstrate PushUp server's excellent
-capacity in serving large number of concurrent connections with much lower
-resource.
-
+services for the underlying web servers. To prove its efficiency, we compare
+the performance of PushUp server and several other server-side event 
+notification methods. The experimental results confirms the PushUp server's 
+excellent capacity in serving large number of concurrent connections with 
+much less resource.
 
 \end{abstract}

@@ -66,21 +66,21 @@ A complete subscription includes the following information:
         subscription request will be terminated and removed from the active 
         subscription list by the channel.
     \item {\bf Time Range(optional)}: the client may specify the ``start time"
-            and ``end time" of its interested messages. Since the channel 
-            caches all the incoming messages for a certain time(explain later), 
-            proper time range should be specified otherwise the client will 
-            always receive all the available messages in the channel (this is
-            because if the time range is not specified, by default the channel
-            will set the start time to be $0$ and the end time to be 
-            $max\_int$).
+        and ``end time" of its interested messages. Since the channel 
+        caches all the incoming messages for a certain time(we will explain this later), 
+        proper time range should be specified otherwise the client will 
+        always receive all the available messages in the channel (this is
+        because if the time range is not specified, by default the channel
+        will set the start time to be $0$ and the end time to be 
+        $max\_int$).
 
-            Owing to the stateless nature of channel, the client should 
-            maintain and update its own start time and end time. 
-            Here is an example shows the basic use case of the time range:
-            every time when a client receives the latest messages from server
-            they will update the `start-time` in the next polling request (or 
-            the subscription request in message queue's prospective). Thus, the
-            clients can always fetch the ``fresh" messages.
+        Owing to the stateless nature of channel, the client should 
+        maintain and update its own start time and end time. 
+        Here is an example shows the basic use case of the time range:
+        every time when a client receives the latest messages from server
+        they will update the `start-time` in the next polling request (or 
+        the subscription request in message queue's prospective). Thus, the
+        clients can always fetch the ``fresh" messages.
 \end{itemize}
 
 Now we'll discuss more about the subscription management and message management.
