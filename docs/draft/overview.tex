@@ -15,37 +15,77 @@ The design of the PushUp server is driven by the following rationales.
     multithreading concurrent model, the event-driven concurrency model 
     requires much less resource to maintain the connections.
 
-\item {\bf Transparency}: Although event-driven concurrency significantly 
+\item {\bf Generality}: Although event-driven concurrency significantly 
     reduce the maintenance cost, it is impractical to have all the web 
-    server to be implemented in event-driven programming style. Thus, the 
-    PushUp server provides the dedicated event-driven long polling services
-    for all underlying web servers. We hope the introduction of PushUp server
-    requires minimal modification on the web servers and hides its existence
-    from the clients.
-
+    server to be implemented in event-driven programming style. Thus, with 
+    PushUp server's dedicated long polling services, all the web servers 
+    can obtain the long polling functionality with minimal effort. Moreover
+    a general long polling service provider prevents web servers from 
+    re-inventing the wheels and, according the Linus Law\cite{Linus} "
+    Many eyes make bugs shallow", helps to make the service more robust.
+ 
 \item {\bf Low Latency}: Adding an intermediate layer in between of the 
     clients and web servers will inevitably create some overhead. 
     The PushUp server should make sure that the extra costs should be within
-    an ``acceptable" range.
+    an ``acceptable" range. In the evaluation section we will carefully examine
+    the latency of the PushUp servers.
 
 \item {\bf Scalability}: The PushUp Server is designed to handle large number of
-    active connections. We introduces mechanisms to make PushUp more able to
-    handle this problem. 
+    active connections. In later sections we well further explore mechanisms 
+    that helps the PushUp scales better.  
 
 \end{itemize}
 
-\subsection{System Overview\\}
+\subsection{System Architecture\\}
 
-TODO: a figure to illustrate the main idea.
+Figure \ref{fig:architecture} shows the overall architecture of the PushUp servers.
+The PushUp server is essentially a specialized message queue, with clients 
+acting as the subscribers and the web server the publishers.
+
+When a client initite a http request, the reverse proxy acts as the web front end,
+which will: 
+\begin{itemize}
+    \item[1] Forward the normal(non-polling) http requests to the corresponding 
+             web servers.
+    \item[2] Intercept the polling http requests and sends a subscription request to 
+             the PushUp servers.
+\end{itemize}
+
+The reverse proxy is a kind of proxy that retrieves
+resources on behalf of a client from one or more 
+servers.\cite{ReverseProxy}. In this case, the reverse
+proxies hide the existence of the origin servers (the 
+web servers and PushUp servers) and presents the clients
+a uniform interface.
+
+On the other end, the web servers can send the publication requests to the 
+PushUp servers in order to notify clients the latest updates.
+
+As suggested figure \ref{fig:architecture}, there can be more than one PushUp 
+servers working together. A load balancer will distribute the incoming publication 
+and subscription to the servers. All PushUp servers are ``identical" to each other,
+that is, a subscriber can subscribe to any of PushUp servers and the publisher can 
+publish message to whatever PushUp server. The PushUp servers coordinate with each
+other in the following ways:
+
+\begin{itemize}
+    \item {\bf Publication}: When a PushUp server receives a publication request, it
+          will broadcast that publication request to the other PushUp servers. Doing
+          this allows all the interested subscriptions(across different machines) to 
+          be notified.
+    \item {\bf Subscription}: The subscription will simply be distributed to different
+          PushUp servers. It is the load balancer's responsibility to make sure 
+          subscriptions will be dispatched evenly.
+\end{itemize}
+
+The motivation of this design is based on the observation that in a typical web server,
+the number of the subscriptions will be significantly larger than that of the 
+publications.
 
 \begin{figure}[htb!]
 \centering%
     \includegraphics[scale=0.30]{figures/pushup.eps}
     \caption{PushUp Architecture}
-    \label{fig:eventloop}
+    \label{fig:architecture}
 \end{figure}
-
-TODO: Overall description of such design. and how it matches the rationale mentioned above.
-
-TODO: should add add picture with the detailed architecture of the PushUp Server.
 

@@ -1,8 +1,20 @@
 \section{Related Work\\}
 
-\subsection{Event vs. Thread\\}
+\subsection{Event-driven Systems\\}
 
-Some stuff mentioned in the class.
+The paper\cite{David} evaluated several strategies to achieve concurrency
+for web servers. The authors compared performance of multi-process, multi-thread, 
+event-driven, etc. for the concurrency implementation. As the experimental 
+results reveal, the event-driven $\mu$-server performed better than multithreading
+or multiprocessing models.
+    
+In the famous technical report\cite{C10K}, Kegel performed detailed
+benchmark on several I/O strategies. The report compares different 
+system supports for the I/O multiplexing(which are the foundation
+of event-driven programming): select(), poll(), epoll() and kqueue() 
+and argues that the implementation of epoll() and select() makes them
+scales poorly while the epoll() and kqueue() performs much better as
+they avoid active pollings to the system kernels.
 
 \subsection{Server Push technologies\\}
 

@@ -60,27 +60,20 @@ To address these problems, we present the event-driven\cite{UnixBook}, scalable
 long polling server PushUp to provide dedicated long polling services for 
 different web applications with less resource cost.
 
-As illustrated in Figure \ref{fig:sim_pushup}, the PushUp server lies in 
-between of clients and web servers. It has two main responsibilities:
+As illustrated in Figure \ref{fig:sim_pushup}, the PushUp server, designed
+as a dedicated long polling server, introduces an intermediary between
+the clients and web servers. Inside the PushUp server there is a specialized 
+event-driven message queue that:
+\begin {itemize}
+    \item[1] Keeps the active connections with very low overhead.
+    \item[2] Provides a familiar interface for clients to listen to the latest 
+             updates and the web servers notifies the newest changes.
+\end {itemize}
+
+
 \begin{figure}[htb!]
 \centering
     \includegraphics[scale=0.40]{figures/sim_pushup.eps}
     \caption{Simplified Architecture of the PushUp}
     \label{fig:sim_pushup}
 \end{figure}
-
-\begin {itemize}
-\item {\bf An event-driven message queue}\cite{PubSub} to provide the long 
-polling services. It keeps the active connections with very low overhead.
-The core to this component is an event-driven message queue provides
-publication interface for the web servers and the subscription interface
-for the clients.
-\item {\bf An event-driven reverse proxy}\cite{ReverseProxy} that retrieves 
-resources on behalf of a client from one or more servers.
-\end {itemize}
-
-The message queue and reverse proxy of PushUp server forms an intermediary
-between browsers and web servers. When a client request arrives the PushUp
-will forward non-update-polling to the backend web servers and the long 
-polling requests to the message queues. Doing this allows both clients and
-web servers work with minimal awareness of PushUp Server. 
