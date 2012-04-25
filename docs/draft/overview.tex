@@ -65,22 +65,8 @@ As suggested figure \ref{fig:architecture}, there can be more than one PushUp
 servers working together. A load balancer will distribute the incoming publication 
 and subscription to the servers. All PushUp servers are ``identical" to each other,
 that is, a subscriber can subscribe to any of PushUp servers and the publisher can 
-publish message to whatever PushUp server. The PushUp servers coordinate with each
-other in the following ways:
-
-\begin{itemize}
-    \item {\bf Publication}: When a PushUp server receives a publication request, it
-          will broadcast that publication request to the other PushUp servers. Doing
-          this allows all the interested subscriptions(across different machines) to 
-          be notified.
-    \item {\bf Subscription}: The subscription will simply be distributed to different
-          PushUp servers. It is the load balancer's responsibility to make sure 
-          subscriptions will be dispatched evenly.
-\end{itemize}
-
-The motivation of this design is based on the observation that in a typical web server,
-the number of the subscriptions will be significantly larger than that of the 
-publications.
+publish message to whatever PushUp server. We will discuss more details in next
+section.
 
 \begin{figure}[htb!]
 \centering%

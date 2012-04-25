@@ -49,39 +49,131 @@ be blocked.
 
 \subsection{Channels\\}
 
-Metaphor: a channel represents the message stream of a certain topic. For example, the channel can represents the feed of a specific user's tweets in twitter, or the feed of a specific topic.
+A ``channel" represents message stream of a certain type. For example, a
+channel may be used to represent the feed of a specific user's tweets in
+twitter, or the articles of a blog. The channel is the building block of 
+PushUp's message queue.
 
-Responsibilities: manages the subscribers and incoming messages
+The channel has two major responsibilities: manages the subscription and
+incoming messages in this channel.
 
-- Subscriptions: 
-    * b-tree, range search
-    - Messages: time: 
+A complete subscription includes the following information:
 
-Periodically purge the timeout users and timeout subscriptions.
+\begin{itemize}
+    \item {\bf Timeout(required)}: the channel will keep the subscription 
+        connection open only for a certain timespan. If nothing happens 
+        during this period, the
+        subscription request will be terminated and removed from the active 
+        subscription list by the channel.
+    \item {\bf Time Range(optional)}: the client may specify the ``start time"
+            and ``end time" of its interested messages. Since the channel 
+            caches all the incoming messages for a certain time(explain later), 
+            proper time range should be specified otherwise the client will 
+            always receive all the available messages in the channel (this is
+            because if the time range is not specified, by default the channel
+            will set the start time to be $0$ and the end time to be 
+            $max\_int$).
+
+            Owing to the stateless nature of channel, the client should 
+            maintain and update its own start time and end time. 
+            Here is an example shows the basic use case of the time range:
+            every time when a client receives the latest messages from server
+            they will update the `start-time` in the next polling request (or 
+            the subscription request in message queue's prospective). Thus, the
+            clients can always fetch the ``fresh" messages.
+\end{itemize}
+
+Now we'll discuss more about the subscription management and message management.
+\begin{itemize}
+    \item {\bf Subscription}: when a subscription arrives, the channel will
+          check if there are any interested messages available. If there are, 
+          the channel will deliver the interested messages to the client 
+          immediately(and then close the connection); otherwise the channel 
+          will keep the subscription 
+          connection open in order to wait for latest messages. The channel may
+          also force to close a subscription connection if it times out. 
+    \item {\bf Messages}: After a message is published and 
+            ``current" subscriptions are notified, the message will continue to 
+            reside in the message queue for a certain time (this time is 
+            configurable). The motivation of this design is that, unlike 
+            traditional message queue where the client can set up ``ONE" 
+            persistent subscription connection to fetch the latest updates
+            continuously, current Ajax technologies cannot start processing
+            the server response until the connection is closed.
+
+            Thus, the client has to initiate the polling requests again after it
+            receives new messages (or timeout).  
+            To overcome this constraint, the server has to keep the messages
+            available for a certain time, so that the clients in the gap 
+            between "just received new messages" and "initiate a new subscription
+            request" will be able to retrieve that message in the next subscription.
+\end{itemize}
+
+The subscriptions and messages are organized by the B-trees\cite{BTree}, where
+timestamps are the keys and the subscriptions(or the messages) are the values.
+We choose B-tree because it provides good time complexity in range operations
+($O(log N)$), which will facilitate the removal of expired subscriptions(or
+messages), retrieval of the messages of a specific time range, etc.
 
 \subsection{Message Queue\\}
 
-Manages the channels; manages the subscriptions and xx
+The message queue manages the channels and presents the publish/subscribe 
+interfaces for the external modules.
 
-Publication: Web server can publish messages to one or more channels (TODO: now the system only supports publishing message to one channel).
+The message has the following responsibilities:
+\begin{itemize}
+    \item {\bf Create, Renew and Close a Channel}: the publisher can create
+            a channel for its own use. After the $create$ 
+            operation, the publisher will receive a unique channel id.
 
-    example: in a Q/A community, when a user John posts a new questions with the tags 'c++', 'java'. The questions will be  question will be published to the channel "author: John", "tag:c++" and "tag:java". The newly published message will be assigned with a unique id(TODO: not done yet).
+            If the channel is inactive (no new messages published) for a 
+            while, the message queue will close this channel. The publisher
+            can call $renew$ operation to extend the expire time of that message
+            queue. The publisher can also $call$ close operation to explicitly
+            close the channel.
+    \item {\bf Batch Publication}: The publisher can publish messages to more than 
+            channels. The newly published message will be assigned with a 
+            unique id.
+            
+            For example, in a Q/A community, when a user John posts a new 
+            questions with the tags 'c++', 'java'. The questions will be 
+            published to the channel "author: John"\footnote{Actually the channel 
+            id is an integer. The textual channel id is used only to help readers
+            better understand the work flow.}, "tag:c++" and "tag:java".
 
-    Subscription: the client sends the subscription to the server with the following information:
-
-    * Interested channels(TODO: only one channel is supported yet)
-    * Timeout: the server will keep the connection open for a period for a certain period of time. If nothing happens within that time span, the server will close the connection.
-    * <start-time, end-time>: the client can specify the start-time and end-time of the interested messages; everytime the clients receive the latest message they will update the `start-time` in the  next polling request.
-    Since same message may be published to several channels, thus it is important to merge the messages from different channels. Since within each channel messages are sorted in <time, id> order, we  can sort messages and remove duplications similar to the merge function in merge sort.
+    \item {\bf Batch Subscription}: Like publisher, the subscriber can also specify
+            more than one channels to listen. When new messages are retrieved from
+            several channels, the message queue will make sure all the messages 
+            are sorted by time and duplicated messages are removed (different 
+            channels may have the same message)
+\end{itemize}
 
 \subsection{Communication between PushUp Servers\\}
 
-Loosely connected to each other, each has exactly the same messages.
-Load balancer distributes the requests evenly, for both pub/sub requests.
+As we have already discussed in the system architecture, several PushUp 
+servers may work together to achieve a better performance, as shown in 
+figure \ref{fig:architecture}.
 
-Information propagation: 
-- description:
-- Workflow: header
+The published messages will be available to all PushUp servers while the
+subscriptions will be distributed to several machines. From the prospective
+of the subscribers and publisher, they have no idea of which PushUp server
+they are actually interacting with. The PushUp server works together to present
+a uniform interface. That is, a subscriber can subscribe to any of PushUp 
+servers and the publisher can publish message to whatever PushUp server. 
 
-More examples!!
+The PushUp servers coordinate with each other in the following ways:
+
+\begin{itemize}
+    \item {\bf Publication}: When a PushUp server receives a publication request, it
+          will broadcast that publication request to the other PushUp servers. Doing
+          this allows all the interested subscriptions(across different machines) to 
+          be notified.
+    \item {\bf Subscription}: The subscription will simply be distributed to different
+          PushUp servers. It is the load balancer's responsibility to make sure 
+          subscriptions will be dispatched evenly.
+\end{itemize}
+
+The motivation of this design is based on the observation that in a typical web server,
+the number of the subscriptions will be significantly larger than that of the 
+publications.
 
