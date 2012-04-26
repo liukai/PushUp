@@ -4,16 +4,16 @@
 The PushUp server runs atop of the Twisted framework\cite{Twisted}, an 
 event driven framework that implements the ``reactor" style event loop.
 
-The reactor patterns is an event handling pattern for handling concurrent
-service requests. It demultiplexes(for example, file descriptor is 
-ready for a write operation) these requests to associated event
-handlers(implemented as the callback). The event handler then performs
+The reactor patterns is an event processing pattern for handling concurrent
+service requests. It demultiplexes these requests to associated event
+handlers(implemented as the callback). The event handler performs
 the actual read or write synchronously.
 
-In our project the reactor is implemented as event loops (one Reactor 
-can start several event loops) that runs in a single thread. The
+In our project the reactor manages event loops (one Reactor 
+can start several event loops) and runs in a single thread. The
 Twisted's event loop has well encapsulated the OSes' underlying 
-event notification mechanism (kqueue() in Unix and epoll() in Linux).
+event notification mechanism (for example, kqueue() in FreeBSD 
+and epoll() in Linux).
 During execution, the event loop manages the details regarding to
 event handler registrations, the activations of event handlers, etc.
 
