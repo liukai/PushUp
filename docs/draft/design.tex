@@ -95,24 +95,26 @@ Now we'll discuss more about the subscription management and message management.
     \item {\bf Messages}: After a message is published and 
             ``current" subscriptions are notified, the message will continue to 
             reside in the message queue for a certain time (this time is 
-            configurable). The motivation of this design is that, unlike 
-            traditional message queue where the client can set up ``ONE" 
+            configurable). 
+            
+            The motivation of this design is that, unlike 
+            traditional message queue where the client can set up ``one" 
             persistent subscription connection to fetch the latest updates
             continuously, current Ajax technologies cannot start processing
-            the server response until the connection is closed.
+            the server response until the connection is closed. As a result, 
+            the client has to initiate the polling requests again after it
+            receives new messages (or timeout).
 
-            Thus, the client has to initiate the polling requests again after it
-            receives new messages (or timeout).  
-            To overcome this constraint, the server has to keep the messages
-            available for a certain time, so that the clients in the gap 
-            between "just received new messages" and "initiate a new subscription
-            request" will be able to retrieve that message in the next subscription.
+            A problem is thus raised: what if a message is published when a client 
+            is in the gap of ``just received new messages" and "initiate a new subscription
+            request"? The message caching ensures 
+            the client will not miss the messages published during that "gap".
 \end{itemize}
 
 The subscriptions and messages are organized by the B-trees\cite{BTree}, where
 timestamps are the keys and the subscriptions(or the messages) are the values.
 We choose B-tree because it provides good time complexity in range operations
-($O(log N)$), which will facilitate the removal of expired subscriptions(or
+($O(log N)$), which will facilitate the removal of expired subscriptions information(or
 messages), retrieval of the messages of a specific time range, etc.
 
 \subsection{Message Queue\\}
@@ -120,17 +122,18 @@ messages), retrieval of the messages of a specific time range, etc.
 The message queue manages the channels and presents the publish/subscribe 
 interfaces for the external modules.
 
-The message has the following responsibilities:
+The message queue has the following responsibilities:
 \begin{itemize}
     \item {\bf Create, Renew and Close a Channel}: the publisher can create
             a channel for its own use. After the $create$ 
-            operation, the publisher will receive a unique channel id.
+            operation, the publisher will receive a unique channel id and the
+            expired time.
 
-            If the channel is inactive (no new messages published) for a 
-            while, the message queue will close this channel. The publisher
-            can call $renew$ operation to extend the expire time of that message
-            queue. The publisher can also $call$ close operation to explicitly
-            close the channel.
+            When a channel is inactive (no new messages published) for a 
+            while, the message queue will close this channel. Of course, The publisher
+            can call $renew$ operation to extend the expire time for that channel.
+            The publisher can also call $close$ operation to explicitly
+            close that channel.
     \item {\bf Batch Publication}: The publisher can publish messages to more than 
             channels. The newly published message will be assigned with a 
             unique id.
@@ -142,9 +145,9 @@ The message has the following responsibilities:
             better understand the work flow.}, "tag:c++" and "tag:java".
 
     \item {\bf Batch Subscription}: Like publisher, the subscriber can also specify
-            more than one channels to listen. When new messages are retrieved from
-            several channels, the message queue will make sure all the messages 
-            are sorted by time and duplicated messages are removed (different 
+            more than one channels to listen. When messages are retrieved from
+            several channels, the message queue will make sure all these messages 
+            are sorted by time and removes duplicated messages (because different 
             channels may have the same message)
 \end{itemize}
 
@@ -155,10 +158,10 @@ servers may work together to achieve a better performance, as shown in
 figure \ref{fig:architecture}.
 
 The published messages will be available to all PushUp servers while the
-subscriptions will be distributed to several machines. From the prospective
-of the subscribers and publisher, they have no idea of which PushUp server
-they are actually interacting with. The PushUp server works together to present
-a uniform interface. That is, a subscriber can subscribe to any of PushUp 
+subscriptions will be distributed to several machines. For 
+subscribers and publisher, it make no difference which PushUp server they interact 
+with.  The PushUp server works together to present
+a uniform interface. A subscriber can subscribe to any of PushUp 
 servers and the publisher can publish message to whatever PushUp server. 
 
 The PushUp servers coordinate with each other in the following ways:
@@ -174,6 +177,5 @@ The PushUp servers coordinate with each other in the following ways:
 \end{itemize}
 
 The motivation of this design is based on the observation that in a typical web server,
-the number of the subscriptions will be significantly larger than that of the 
-publications.
+the number of the subscriptions will be significantly larger than that of the publications.
 
