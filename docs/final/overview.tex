@@ -10,7 +10,7 @@ The design of the PushUp server is driven by the following rationales.
     is to minimize the cost of maintaining these active concurrent connections,
     which can in turn enhance the system's scalability.
      
-    The key to reduce the cost is the event-driven concurrency architecture.
+    The key to reducing the cost is the event-driven concurrency architecture.
     Unlike the multiprocessing or multithreading models, the event-driven model 
     requires much less resource to maintain the connections, avoids context
     switches between threads and expensive lock operations.
@@ -23,7 +23,7 @@ The design of the PushUp server is driven by the following rationales.
     servers to obtain the long polling functionality with minimal effort.
 
     Moreover a general long polling service provider prevents web servers from 
-    re-inventing the wheels and, according the Linus Law\cite{Linus} "
+    re-inventing the wheel and, according the Linus Law\cite{Linus} "
     Many eyes make bugs shallow", helps to make the service more robust.
  
 \item {\bf Low Latency}: Adding an intermediate layer in between of the 
@@ -44,7 +44,7 @@ Figure \ref{fig:architecture} shows the overall architecture of the PushUp serve
 The PushUp server is essentially a specialized message queue, with clients 
 acting as the subscribers and the web server the publishers.
 
-When a client initites an http request, the reverse proxy acts as the web front end,
+When a client initiates an http request, the reverse proxy acts as the web front end,
 which will:
 \begin{itemize}
     \item[1] Forwards the normal(non-polling) http requests to the corresponding 
@@ -52,6 +52,16 @@ which will:
     \item[2] Intercepts the polling http requests and sends a subscription request to 
              the PushUp servers.
 \end{itemize}
+
+At a high level, message queues are able to solve the problem of increasing the number of
+connections efficiently and at scale because it is able to ``decouple" the availability of
+the publishers and the subscribers and reduce the necessity for constant direct communication. 
+Message queues are simple, stand alone, and can easily scale by replication. 
+We allow them to maintain active connections with active clients. If the web server 
+only communicate to these message queues, then, they will only need to maintain a much 
+smaller number of connections, while making the clients feel like the data is in fact 
+streaming from the server. This removes the necessity of replicating and coordinating different 
+web servers.
 
 The reverse proxy is a kind of proxy that retrieves
 resources on behalf of a client from one or more 
@@ -61,7 +71,7 @@ web servers and PushUp servers) and presents the clients
 a uniform interface.
 
 On the other end, the web servers can send the publication requests to the 
-PushUp servers in order to inform interestd clients with the latest updates.
+PushUp servers in order to inform interested clients with the latest updates.
 
 As suggested figure \ref{fig:architecture}, there can be more than one PushUp 
 servers working together. Both subscription and publication will go through a 
