@@ -54,11 +54,12 @@ some highly interactive web applications.
 
 The down-side of long polling is that the server may have to deal with large
 amount of active connections between the clients and the servers. For example,
-suppose a website has one million users and, 10\% of them will be online. In this case,
-the server should be able to hold at least 100,000 concurrent connections.
+suppose a website has one million registered users, of which 10\% are online at any 
+time. This means that the server must able to hold at least 100,000 concurrent 
+connections if it chooses to employ long polling.
 
-To address these problems, we present the event-driven\cite{UnixBook}, scalable
-long polling server PushUp to provide dedicated long polling services for 
+To address these problems, we present the event-driven, scalable
+long polling server \textbf{PushUp} to provide dedicated long polling services for 
 different web applications with less resource cost.
 
 As illustrated in Figure \ref{fig:sim_pushup}, the PushUp server, designed

@@ -17,10 +17,10 @@ event notification mechanism (kqueue() in Unix and epoll() in Linux).
 During execution, the event loop manages the details regarding to
 event handler registrations, the activations of event handlers, etc.
 
-The advantage of the reactor patter is the complete separation of the 
-application specific code from the reactor implementation. That is to
+The advantage of the reactor pattern is the complete separation of the 
+application specific code from reactor's implementations. That is to
 say, the application components can be easily divided into reusable 
-modulars. Also, running the reactor in a single threads significantly
+modules. Also, running the reactor in a single thread significantly
 reduce the concurrency controls since no other threads will contend 
 the system resource instantaneously.
 
@@ -31,8 +31,8 @@ further illustrates the detailed work flow with sequence diagram.
 As we can see from these figures, one of the caveats of in 
 event-driven development is that all the event handlers should 
 be carefully designed in order to make sure its execution time 
-will not take a long time; otherwise the whole system will 
-be blocked.
+will not take a long time; otherwise other pending actions will
+be blocked on this operation.
 
 \begin{figure}[htb!]
     \centering%
@@ -67,12 +67,10 @@ A complete subscription includes the following information:
         subscription list by the channel.
     \item {\bf Time Range(optional)}: the client may specify the ``start time"
         and ``end time" of its interested messages. Since the channel 
-        caches all the incoming messages for a certain time(we will explain this later), 
-        proper time range should be specified otherwise the client will 
-        always receive all the available messages in the channel (this is
-        because if the time range is not specified, by default the channel
-        will set the start time to be $0$ and the end time to be 
-        $max\_int$).
+        caches all the incoming messages for a certain time (explained in more detail later), 
+        a proper time range should be specified otherwise the client will 
+        always receive all the available messages in the channel from the beginning
+		as the default range is set from time $0$ to $max\_int$.
 
         Owing to the stateless nature of channel, the client should 
         maintain and update its own start time and end time. 
@@ -88,12 +86,12 @@ Now we'll discuss more about the subscription management and message management.
     \item {\bf Subscription}: when a subscription arrives, the channel will
           check if there are any interested messages available. If there are, 
           the channel will deliver the interested messages to the client 
-          immediately(and then close the connection); otherwise the channel 
+          immediately, then close the connection; otherwise the channel 
           will keep the subscription 
           connection open in order to wait for latest messages. The channel may
           also force to close a subscription connection if it times out. 
     \item {\bf Messages}: After a message is published and 
-            ``current" subscriptions are notified, the message will continue to 
+            ``current" subscribers are notified, the message will continue to 
             reside in the message queue for a certain time (this time is 
             configurable). 
             
@@ -106,9 +104,9 @@ Now we'll discuss more about the subscription management and message management.
             receives new messages (or timeout).
 
             A problem is thus raised: what if a message is published when a client 
-            is in the gap of ``just received new messages" and "initiate a new subscription
+            is in the gap of ``just received new messages" and ``initiate a new subscription
             request"? The message caching ensures 
-            the client will not miss the messages published during that "gap".
+            the client will not miss the messages published during that ``gap".
 \end{itemize}
 
 The subscriptions and messages are organized by the B-trees\cite{BTree}, where

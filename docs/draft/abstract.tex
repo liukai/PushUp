@@ -4,7 +4,7 @@ The ``long-polling" is a server push technology that makes the delivery the
 latest updates from server to client more ``instant". With long polling, 
 when a client requests updates from the server, the server
 will keep the request connection open if there is no available update yet. 
-The server sends the complete response to the server only when the interested
+The server sends the complete response to the client only when the interested
 information becomes available or after a suitable timeout.
 
 However this solution may require the server to hold large number of open 
