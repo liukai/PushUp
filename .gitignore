@@ -3,3 +3,4 @@ data/
 *.pid
 *.log
 *.rdb
+.DS_Store
