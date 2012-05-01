@@ -44,15 +44,6 @@ Figure \ref{fig:architecture} shows the overall architecture of the PushUp serve
 The PushUp server is essentially a specialized message queue, with clients 
 acting as the subscribers and the web server the publishers.
 
-When a client initiates an http request, the reverse proxy acts as the web front end,
-which will:
-\begin{itemize}
-    \item[1] Forwards the normal(non-polling) http requests to the corresponding 
-             web servers.
-    \item[2] Intercepts the polling http requests and sends a subscription request to 
-             the PushUp servers.
-\end{itemize}
-
 At a high level, message queues are able to solve the problem of increasing the number of
 connections efficiently and at scale because it is able to ``decouple" the availability of
 the publishers and the subscribers and reduce the necessity for constant direct communication. 
@@ -62,6 +53,16 @@ only communicate to these message queues, then, they will only need to maintain 
 smaller number of connections, while making the clients feel like the data is in fact 
 streaming from the server. This removes the necessity of replicating and coordinating different 
 web servers.
+
+When a client initiates an http request, the reverse proxy acts as the web front end,
+which will:
+\begin{itemize}
+    \item[1] Forwards the normal(non-polling) http requests to the corresponding 
+             web servers.
+    \item[2] Intercepts the polling http requests and sends a subscription request to 
+             the PushUp servers.
+\end{itemize}
+
 
 The reverse proxy is a kind of proxy that retrieves
 resources on behalf of a client from one or more 
