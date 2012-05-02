@@ -50,7 +50,9 @@ methods.
         its reception by the client. It shows how long it takes for the 
         client to be updated when an event occurs.
     \item {\bf Received Message Percentage (RMP)}: RMP indicates the data 
-        loss in during the network communication. 
+        loss in during the network communication. Packets could be lost
+		when the network buffer is congested or full and the necessary packets
+		do not reach the destination until after the time out.
     \item {\bf Server Memory Usage (SMU)}: In many real world long polling 
         system, the polling requests spent most of their time waiting for 
         the new events.[source needed] Thus, memory cost for each idle 

@@ -1,3 +1,13 @@
+\section{Future Work}
+
+The current implementation of PushUp Server is a working prototype which illustrates
+the ideas of a scalable event driven long polling server. There are several aspects that
+we have not addressed in terms of system reliability and fault tolerance. Push Up servers
+are actually inherently replicated, the data written in any message queue will be propagated
+to the other servers. This means that as long as there is at least 1 PushUp server running
+service can still be delivered. In future works, we can tackle the problem of efficiently
+restoring state when a PushUp server restarts.
+
 \section{Related Work\\}
 
 \subsection{Event-driven Systems\\}
