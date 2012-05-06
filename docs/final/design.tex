@@ -4,22 +4,22 @@
 The PushUp server runs atop of the Twisted framework\cite{Twisted}, an 
 event driven framework that implements the ``reactor" style event loop.
 
-The reactor patterns is an event processing pattern for handling concurrent
-service requests. It demultiplexes these requests to associated event
-handlers(implemented as the callback). The event handler performs
-the actual read or write synchronously.
+The reactor pattern is an event processing pattern for handling concurrent
+service requests. It demultiplexes these requests to the associated event
+handlers(implemented as the callback), which performs the actual read or 
+write operations.
 
-In our project the reactor manages event loops (one Reactor 
+The reactor manages event loops (one Reactor 
 can start several event loops) and runs in a single thread. The
 Twisted's event loop has well encapsulated the OSes' underlying 
 event notification mechanism (for example, kqueue() in FreeBSD 
 and epoll() in Linux).
 During execution, the event loop manages the details regarding to
-event handler registrations, the activations of event handlers, etc.
+the registration, activation, etc., of event handlers, etc.
 
-The advantage of the reactor pattern is the complete separation of the 
-application specific code from reactor's implementations. That is to
-say, the application components can be easily divided into reusable 
+One of the advantages of the reactor pattern is the complete separation
+of the application specific code from reactor's implementation. That is
+, the application components can be easily divided into reusable 
 modules. Also, running the reactor in a single thread significantly
 reduce the concurrency controls since no other threads will contend 
 the system resource instantaneously.
@@ -168,7 +168,8 @@ The PushUp servers coordinate with each other in the following ways:
     \item {\bf Publication}: When a PushUp server receives a publication request, it
           will broadcast that publication request to the other PushUp servers. Doing
           this allows all the interested subscriptions(across different machines) to 
-          be notified.
+          be notified. Currently, the pulication propagation is implemented by 
+          simple unicasting.
     \item {\bf Subscription}: The subscription will simply be distributed to different
           PushUp servers. It is the load balancer's responsibility to make sure 
           subscriptions will be dispatched evenly.

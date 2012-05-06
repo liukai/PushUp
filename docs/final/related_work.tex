@@ -30,3 +30,15 @@ analysis of the consistency and scalability of several different server
 push technologies. As the experimental results showed the event-driven
 long polling model shows an excellent efficiency and scalability.
 
+\subsection{Existing Long Polling Servers}
+There are already many existing ``long polling servers", such as 
+Tornado \cite{Tornado}, Cometd\cite{CometD}, etc. However, these 
+servers aim to provide much low-level mechanisms, such as the 
+event-driven long polling ability. The users are expected to 
+implement a more specific long polling functionalities based on 
+these basic mechanisms.
+
+PushUp, on the other hand, provides a general-purpose and high-level 
+long polling services, with the abstraction of publish/subscribe model,
+which allows user to have the long polling services with much less
+effort.

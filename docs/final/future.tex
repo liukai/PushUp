@@ -2,8 +2,42 @@
 
 The current implementation of PushUp Server is a working prototype which illustrates
 the ideas of a scalable event driven long polling server. There are several aspects that
-we have not addressed in terms of system reliability and fault tolerance. Push Up servers
-are actually inherently replicated, the data written in any message queue will be propagated
-to the other servers. This means that as long as there is at least 1 PushUp server running
-service can still be delivered. In future works, we can tackle the problem of efficiently
-restoring state when a PushUp server restarts.
+wishes to improve in the future:
+
+\begin{itemize}
+\item \emph{Beyond the Single-thread Event Loop}: While single-thread event loop 
+        significantly simplifies the implementation, it doesn't fully exploit the
+        potential of multi-core computers. 
+        
+        For the next step, we are considering to migrate from twisted
+        framework to Speedo library, which is also being developed by our team.\footnote{
+            Actually at first our team considered to use Speedo to support event-driven
+            development. But after the evaluation of the risks and the workload, we suspended
+            the development of the Speedo and switched to ``python + twisted" as the
+            development platform.}
+
+        Speedo is also a reactor-style event loop library but supports 
+        ``Event Loop + Thread Pool" style development. As Speedo is implemented 
+        in the system programming language Go\cite{GoLang}, we are also expecting a 
+        significant improvement of the system performance.
+
+\item \emph {Message Exchange Between PushUp Servers}: Currently the publication 
+        propagation is achieved by unicasting. This can be a potential bottleneck
+        if there were large number of PushUp servers. 
+
+        We may improve this by the ``gossip protocol". A gossip protocol is a 
+        style of internode communication protocol that imitates the gossiping 
+        in human societies. Gossip protocols are often used in distributed 
+        systems to exchange messages without a centralized server. 
+
+        Gossip protocol can also be used to efficiently notify the PushUp servers
+        the joining/leaving of other nodes.
+
+\item \emph {Reliablity and Fault Tolerance}:
+    Push Up servers are actually inherently replicated, the data written in any
+    message queue will be propagated
+    to the other servers. This means that as long as there is at least one 
+    PushUp server running
+    service can still be delivered. In future works, we can tackle the problem of efficiently
+    restoring state when a PushUp server restarts.
+\end{itemize}

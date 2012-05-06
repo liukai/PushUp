@@ -26,17 +26,17 @@ install and configure them.
 \end{itemize}
 
 Given those drawbacks, we consider another solution: long polling
-\cite{LongPolling}. The work flow of long polling can be described in Figure
+\cite{LongPolling}. The work flow of long polling is described in Figure
 \ref{fig:long_polling}. When a client ``asks for"(polls) an update by sending 
 an HTTP request to the server, if no information is yet available, the 
-server will not terminate the connection immediately; Instead, the server 
+server will not terminate the connection immediately; Instead, it 
 will keep the connection open for a period of time until (1) the information 
-become available (2) after a suitable timeout($50$ seconds is a common choice
+become available or (2) after a suitable timeout($50$ seconds is a common choice
 in many commercial websites).
 
-The benefit to long-polling is that there is less back-and-forth between the 
+One of long-polling's benefits is the less back-and-forth between the 
 client and server. The server is in control of the timing, so updates to the
-browser can normally be made within milliseconds. This makes it ideal for 
+browser can normally be made within milliseconds, which makes it ideal for 
 some highly interactive web applications.
 
 \begin{figure}[htb!]
@@ -54,12 +54,12 @@ some highly interactive web applications.
 
 The down-side of long polling is that the server may have to deal with large
 amount of active connections between the clients and the servers. For example,
-suppose a website has one million registered users, of which 10\% are online at any 
-time. This means that the server must able to hold at least 100,000 concurrent 
-connections if it chooses to employ long polling.
+suppose a website has one million registered users, 10\% of which are online at any 
+time. This means the server must be able to hold at least 100,000 concurrent 
+connections.
 
-To address these problems, we present the event-driven, scalable
-long polling server \textbf{PushUp} to provide dedicated long polling services for 
+To address these problems, we present an event-driven, scalable
+long polling server \textbf{PushUp} to provide dedicated long polling service for 
 different web applications with less resource cost.
 
 As illustrated in Figure \ref{fig:sim_pushup}, the PushUp server, designed
