@@ -54,9 +54,6 @@ channel may be used to represent the feed of a specific user's tweets in
 twitter, or the articles of a blog. The channel is the building block of 
 PushUp's message queue.
 
-The channel has two major responsibilities: manages the subscription and
-incoming messages in this channel.
-
 A complete subscription includes the following information:
 
 \begin{itemize}
@@ -95,7 +92,7 @@ Now we'll discuss more about the subscription management and message management.
             reside in the message queue for a certain time (this time is 
             configurable). 
             
-            The motivation of this design is that, unlike 
+            The motivation of this design is, unlike 
             traditional message queue where the client can set up ``one" 
             persistent subscription connection to fetch the latest updates
             continuously, current Ajax technologies cannot start processing
@@ -111,7 +108,7 @@ Now we'll discuss more about the subscription management and message management.
 
 The subscriptions and messages are organized by the B-trees\cite{BTree}, where
 timestamps are the keys and the subscriptions(or the messages) are the values.
-We choose B-tree because it provides good time complexity in range operations
+We chose B-tree because it provides good time complexity in range operations
 ($O(log N)$), which will facilitate the removal of expired subscriptions information(or
 messages), retrieval of the messages of a specific time range, etc.
 
